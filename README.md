@@ -1,1 +1,1 @@
-# Intel-8008-Emulator
+# Intel-8080-Emulator
