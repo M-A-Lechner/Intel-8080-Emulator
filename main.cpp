@@ -9,13 +9,17 @@ using namespace std;
 #define word unsigned short
 
 #define STAX_B 0x02
+#define STAX_D 0x12
 #define STA 0x32
 #define STC 0x37
 #define LDA 0x3A
 #define INR_A 0x3C
 #define DCR_A 0x3D
 #define CMC 0x3F
+#define MOV_B_A 0x47
+#define MOV_M_A 0x77
 #define MOV_A_B 0x78
+#define MOV_A_M 0x7E
 #define JMP 0xC3
 #define OUT 0xD3
 
@@ -89,10 +93,16 @@ struct CPU {
 
         while (cycles > 0) {
             currByte = memory.data[PC];
-            switch(currByte) {
+            switch(currByte) {      //TODO: move all instructions into own namespace, and as unique functions
                 case STAX_B: {
                     clog << "STAX B\n";
                     word adr = (word)(((registers.B & 0xF) << 8) | registers.C);
+                    memory.data[adr] = registers.A;
+                    counter_increase = 3;
+                } break;
+                case STAX_D: {
+                    clog << "STAX D\n";
+                    word adr = (word)(((registers.D & 0xF) << 8) | registers.E);
                     memory.data[adr] = registers.A;
                     counter_increase = 3;
                 } break;
@@ -136,9 +146,26 @@ struct CPU {
                     flags.S = (registers.A >> 7) & 1;
                     counter_increase = 1;
                 } break;
+                case MOV_B_A: {
+                    clog << "MOV_B_A\n";
+                    registers.B = registers.A;
+                    counter_increase = 1;
+                } break;
+                case MOV_M_A: {
+                    clog << "MOV_M_A\n";
+                    byte adr = get_next_word();
+                    memory.data[adr] = registers.A;
+                    counter_increase = 1;
+                } break;
                 case MOV_A_B: {
                     clog << "MOV_A_B\n";
                     registers.A = registers.B;
+                    counter_increase = 1;
+                } break;
+                case MOV_A_M: {
+                    clog << "MOV_A_M\n";
+                    byte adr = get_next_word();
+                    registers.A = memory.data[adr];
                     counter_increase = 1;
                 } break;
                 case STC: {
