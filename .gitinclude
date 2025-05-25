@@ -1,2 +1,9 @@
-main.cpp
 README.md
+
+src/main.cpp
+src/intel_8080.cpp
+src/processor.h
+src/instructions.cpp
+
+src/definitions/datatypes.h
+src/definitions/opcodes.h
