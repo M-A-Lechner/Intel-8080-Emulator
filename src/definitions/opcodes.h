@@ -1,11 +1,19 @@
 #pragma once
 
 #define STAX_B 0x02
+#define INR_B 0x04
+#define INR_C 0x0C
 #define STAX_D 0x12
+#define INR_D 0x14
+#define INR_E 0x1C
+#define INR_H 0x24
+#define INR_L 0x2C
 #define STA 0x32
+#define INR_M 0x34
 #define STC 0x37
 #define LDA 0x3A
 #define INR_A 0x3C
+
 #define DCR_A 0x3D
 #define CMC 0x3F
 

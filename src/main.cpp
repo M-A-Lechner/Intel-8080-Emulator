@@ -23,9 +23,9 @@ void printOutData(OUT_DATA& out_data) {
 }
 
 int main (int argc, char *argv[]) {
-    Processor cpu;
+    Processor cpu{};
     cpu.reset();
-    MEMORY memory;
+    MEMORY memory{};
 
     memory.data[0] = LDA;  //Load first character into A register. <-- This should be done with LDAX instead of altering the source code at runtime!
     memory.data[1] = 0x05;
@@ -61,8 +61,8 @@ int main (int argc, char *argv[]) {
     memory.data[0x050B] = 0x03; //<End of text>
 
 
-    IN_DATA in_data;
-    OUT_DATA out_data;
+    IN_DATA in_data{};
+    OUT_DATA out_data{};
 
     cpu.execute(12*7, memory, in_data, out_data);
     printOutData(out_data);

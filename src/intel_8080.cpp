@@ -34,6 +34,8 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
 
     while (cycles > 0) {
         currByte = memory.data[PC];
+        instructions::execute_instruction(currByte, *this, memory);
+        /*
         switch(currByte) {      //TODO: move all instructions into own namespace, and as unique functions
             case STAX_B: {
                 log_instruction("STAX B");
@@ -87,28 +89,7 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
                 flags.S = (registers.A >> 7) & 1;
                 counter_increase = 1;
             } break;
-            case MOV_B_A: {
-                log_instruction("MOV_B_A");
-                registers.B = registers.A;
-                counter_increase = 1;
-            } break;
-            case MOV_M_A: {
-                log_instruction("MOV_M_A\n");
-                byte adr = get_next_word(memory);
-                memory.data[adr] = registers.A;
-                counter_increase = 1;
-            } break;
-            case MOV_A_B: {
-                log_instruction("MOV_A_B");
-                registers.A = registers.B;
-                counter_increase = 1;
-            } break;
-            case MOV_A_M: {
-                log_instruction("MOV_A_M");
-                byte adr = get_next_word(memory);
-                registers.A = memory.data[adr];
-                counter_increase = 1;
-            } break;
+            
             case STC: {
                 log_instruction("STC");
                 flags.CF = 1;
@@ -124,6 +105,7 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
                 return;
             }
         }
+        */
         PC += counter_increase;
         counter_increase = 0;
         cycles -= 1;
@@ -153,6 +135,10 @@ byte Processor::get_next_byte(MEMORY& memory) {
     return adr;
 }
 
+byte& Processor::get_byte_at_ref(MEMORY& memory, byte adr) {
+    return memory.data[adr];
+}
+
 word Processor::get_next_word(MEMORY& memory) {
     byte lb = memory.data[PC+1];
     byte hb = memory.data[PC+2];
@@ -162,6 +148,98 @@ word Processor::get_next_word(MEMORY& memory) {
     return adr;
 }
 
-void Processor::log_instruction(std::string instruction_name) {
-    std::clog << instruction_name << "\n";
+char Processor::get_register_name_by_code(byte code) {
+    switch (code) {
+        case 0b0000: {
+            return 'B';
+        } break;
+        case 0b0001: {
+            return 'C';
+        } break;
+        case 0b0010: {
+            return 'D';
+        } break;
+        case 0b0011: {
+            return 'E';
+        } break;
+        case 0b0100: {
+            return 'H';
+        } break;
+        case 0b0101: {
+            return 'L';
+        } break;
+        case 0b0110: {
+            return 'M';
+        } break;
+        case 0b0111: {
+            return 'A';
+        } break;
+        default: {
+            std::stringstream err;
+            err << (int)code << " is an unkown register code.";
+            throw std::runtime_error(err.str());
+        }
+    }
+}
+
+byte& Processor::get_register_by_code(MEMORY& memory, byte code) {
+    switch (code) {
+        case 0b0000: {
+            return registers.B;
+        } break;
+        case 0b0001: {
+            return registers.C;
+        } break;
+        case 0b0010: {
+            return registers.D;
+        } break;
+        case 0b0011: {
+            return registers.E;
+        } break;
+        case 0b0100: {
+            return registers.H;
+        } break;
+        case 0b0101: {
+            return registers.L;
+        } break;
+        case 0b0110: {
+            return get_byte_at_ref(memory, (registers.L << 8) | registers.H);
+        } break;
+        case 0b0111: {
+            return registers.A;
+        } break;
+        default: {
+            std::stringstream err;
+            err << (int)code << " is an unkown register code.";
+            throw std::runtime_error(err.str());
+        }
+    }
+}
+
+void Processor::log_registers() {
+    std::clog << "Current register values:\n";
+    std::clog << "A: " << (int)registers.A << "\n";
+    std::clog << "B: " << (int)registers.B << "\n";
+    std::clog << "C: " << (int)registers.C << "\n";
+    std::clog << "D: " << (int)registers.D << "\n";
+    std::clog << "E: " << (int)registers.E << "\n";
+    std::clog << "H: " << (int)registers.H << "\n";
+    std::clog << "L: " << (int)registers.L << "\n\n";
+}
+
+void Processor::log_flags() {
+    std::clog << "Current flag values:\n";
+    std::clog << "S: " << (int)flags.S << "\n";
+    std::clog << "Z: " << (int)flags.Z << "\n";
+    std::clog << "AC: " << (int)flags.AC << "\n";
+    std::clog << "CF: " << (int)flags.CF << "\n";
+    std::clog << "P: " << (int)flags.P << "\n\n";
+}
+
+void Processor::increase_counter(byte amount) {
+    PC += amount;
+}
+
+void Processor::halt() {
+    std::clog << "Processor halted.\n";
 }

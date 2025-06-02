@@ -1,11 +1,14 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <limits.h>
+#include <memory>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
+#include "instructions.h"
 
 
 struct MEMORY {
@@ -65,5 +68,17 @@ struct Processor {
 
     word get_next_word(MEMORY& memory);
 
-    void log_instruction(std::string instruction_name);
+    char get_register_name_by_code(byte code);
+
+    byte& get_register_by_code(MEMORY& memory, byte code);
+
+    byte& get_byte_at_ref(MEMORY& memory, byte adr);
+
+    void log_registers();
+
+    void log_flags();
+
+    void increase_counter(byte amount = 1);
+
+    void halt();
 };
