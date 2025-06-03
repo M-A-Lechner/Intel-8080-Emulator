@@ -22,6 +22,8 @@ A Makefile has been included in the root directory. Simply open your console in 
 
 Please check this chapter to see which instructions are functional, even though an instruction might be listed in "opcodes.h", it may not be implemented yet.
 
-All MOV and INR instructions have been implemented, but not thoroughly tested.
+- [x] MOV (not tested)
+- [x] INR (not tested)
+- [x] DCR (not tested)
 
 Whilst other instructions have also in some form been implemented, they are at this point not useable, since all the instructions are currently being migrated out of the processor struct.

@@ -74,7 +74,7 @@ struct Processor {
 
     byte& get_byte_at_ref(MEMORY& memory, byte adr);
 
-    void log_registers();
+    void log_registers(MEMORY& memory);
 
     void log_flags();
 

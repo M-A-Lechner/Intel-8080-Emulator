@@ -1,20 +1,65 @@
 #pragma once
 
-#define STAX_B 0x02
-#define INR_B 0x04
-#define INR_C 0x0C
-#define STAX_D 0x12
-#define INR_D 0x14
-#define INR_E 0x1C
-#define INR_H 0x24
-#define INR_L 0x2C
-#define STA 0x32
-#define INR_M 0x34
-#define STC 0x37
-#define LDA 0x3A
-#define INR_A 0x3C
 
+#define STAX_B 0x02
+
+#define INR_B 0x04
+#define DCR_B 0x05
+
+
+
+
+
+
+#define INR_C 0x0C
+#define DCR_C 0x0D
+
+
+
+#define STAX_D 0x12
+
+#define INR_D 0x14
+#define DCR_D 0x15
+
+
+
+
+
+
+#define INR_E 0x1C
+#define DCR_E 0x1D
+
+
+
+
+
+
+#define INR_H 0x24
+#define DCR_H 0x25
+
+
+
+
+
+
+#define INR_L 0x2C
+#define DCR_L 0x2D
+
+
+
+#define STA 0x32
+
+#define INR_M 0x34
+#define DCR_M 0x35
+
+#define STC 0x37
+
+
+#define LDA 0x3A
+
+#define INR_A 0x3C
 #define DCR_A 0x3D
+
 #define CMC 0x3F
 
 #define MOV_B_B 0X40
@@ -71,7 +116,7 @@
 #define MOV_M_E 0X73
 #define MOV_M_H 0X74
 #define MOV_M_L 0X75
-#define MOV_M_M 0X76
+#define HLT 0X76
 #define MOV_M_A 0X77
 #define MOV_A_B 0X78
 #define MOV_A_C 0X79

@@ -73,11 +73,6 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
                 out_data.data[adr] = registers.A;
                 counter_increase = 1;
             } break;
-            case INR_A: {
-                log_instruction("INR_A");
-                increase_by_one(registers.A);
-                counter_increase = 1;
-            } break;
             case DCR_A: {
                 log_instruction("DCR_A");
                 if (flags.CF == 1 && registers.A == 0x00) {
@@ -216,15 +211,16 @@ byte& Processor::get_register_by_code(MEMORY& memory, byte code) {
     }
 }
 
-void Processor::log_registers() {
+void Processor::log_registers(MEMORY& memory) {
     std::clog << "Current register values:\n";
-    std::clog << "A: " << (int)registers.A << "\n";
-    std::clog << "B: " << (int)registers.B << "\n";
-    std::clog << "C: " << (int)registers.C << "\n";
-    std::clog << "D: " << (int)registers.D << "\n";
-    std::clog << "E: " << (int)registers.E << "\n";
-    std::clog << "H: " << (int)registers.H << "\n";
-    std::clog << "L: " << (int)registers.L << "\n\n";
+    std::clog << "A: " << std::hex << (int)registers.A << "\n";
+    std::clog << "B: " << std::hex << (int)registers.B << "\n";
+    std::clog << "C: " << std::hex << (int)registers.C << "\n";
+    std::clog << "D: " << std::hex << (int)registers.D << "\n";
+    std::clog << "E: " << std::hex << (int)registers.E << "\n";
+    std::clog << "H: " << std::hex << (int)registers.H << "\n";
+    std::clog << "L: " << std::hex << (int)registers.L << "\n";
+    std::clog << "Memory: " << std::hex << (int)get_byte_at_ref(memory, (registers.L << 8) | registers.H) << "\n\n";
 }
 
 void Processor::log_flags() {

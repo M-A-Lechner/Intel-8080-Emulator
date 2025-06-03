@@ -5,12 +5,23 @@
 namespace instructions {
     void execute_instruction(byte opcode, Processor& processor, MEMORY& memory) {
         switch (byte operation_area = opcode >> 6) {
-
+            
             // 0b00
             case 0: {
-                if ((opcode & 0b00000100) == 4) {
-                    increase_instruction(opcode, processor, memory);
-                }
+                byte instruction_code = opcode & 0b00000111;
+                switch (instruction_code) {
+                    case (4): {
+                        add_sub_instruction(opcode, processor, memory, 1, "INR");
+                    } break;
+                    case (5): {
+                        add_sub_instruction(opcode, processor, memory, -1, "DCR");
+                    } break;
+                    default: {
+                        std::stringstream err;
+                        err << "The program encountered the following illegal instruction: " << opcode << "\n";
+                        throw std::runtime_error(err.str());
+                    }
+                };
             } break;
 
             // 0b01 describes all MOV instructions
@@ -34,18 +45,18 @@ namespace instructions {
             }
         };
 
-        processor.log_registers();
+        processor.log_registers(memory);
         processor.log_flags();
         processor.increase_counter();
     }
 
-    void increase_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+    void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
         byte reg_code = ((opcode & 0b00111000) >> 3);
         byte& reg = processor.get_register_by_code(memory, reg_code);
 
-        processor.flags.AC = (((reg & 0x0F) + 1) > 0x0F);
+        processor.flags.AC = (((reg & 0x0F) + amount) > 0x0F);
 
-        reg += 1;
+        reg += amount;
         processor.flags.S = (reg >> 7) & 1;
         processor.flags.Z = (reg == 0) ? 1 : 0;
 
@@ -56,7 +67,7 @@ namespace instructions {
             v = v & (v - 1);
         }
         processor.flags.P = parity;
-        std::clog << "INR " << processor.get_register_name_by_code(reg_code) << "\n";
+        std::clog << instruction_name << " " << processor.get_register_name_by_code(reg_code) << "\n";
     }
 
     void move_instruction(byte opcode, Processor& processor, MEMORY& memory) {
