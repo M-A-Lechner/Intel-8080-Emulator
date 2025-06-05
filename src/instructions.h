@@ -16,4 +16,9 @@ namespace instructions {
 
     void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
     void move_instruction(byte opcode, Processor& processor, MEMORY& memory);
+
+    void load_instruction(byte opcode, Processor& processor, MEMORY& memory);
+    void store_instruction(byte opcode, Processor& processor, MEMORY& memory);
+
+    void complement_accumulator(Processor& processor);
 }

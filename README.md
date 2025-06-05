@@ -25,5 +25,8 @@ Please check this chapter to see which instructions are functional, even though 
 - [x] MOV (not tested)
 - [x] INR (not tested)
 - [x] DCR (not tested)
+- [x] NOP (not tested)
+- [x] LDAX B & D (not tested)
+- [x] STAX B & D (not tested)
 
 Whilst other instructions have also in some form been implemented, they are at this point not useable, since all the instructions are currently being migrated out of the processor struct.

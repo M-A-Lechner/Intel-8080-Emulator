@@ -1,5 +1,6 @@
 #pragma once
 
+#define NOP 0x00;
 
 #define STAX_B 0x02
 
@@ -9,7 +10,7 @@
 
 
 
-
+#define LDAX_B 0x0A
 
 #define INR_C 0x0C
 #define DCR_C 0x0D
@@ -24,7 +25,7 @@
 
 
 
-
+#define LDAX_D 0x1A
 
 #define INR_E 0x1C
 #define DCR_E 0x1D

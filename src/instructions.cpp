@@ -4,23 +4,36 @@
 
 namespace instructions {
     void execute_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+        
         switch (byte operation_area = opcode >> 6) {
             
             // 0b00
             case 0: {
-                byte instruction_code = opcode & 0b00000111;
-                switch (instruction_code) {
-                    case (4): {
+                switch (opcode & 0b00000111) {
+                    case (0b000): {
+                        std::clog << "NOP\n";
+                    } break;
+                    case (0b010): {
+                        if ((opcode & 0b00001000) >> 3 == 1)
+                            load_instruction(opcode, processor, memory);
+                        else store_instruction(opcode, processor, memory);
+                    } break;
+                    case (0b100): {
                         add_sub_instruction(opcode, processor, memory, 1, "INR");
                     } break;
-                    case (5): {
+                    case (0b101): {
                         add_sub_instruction(opcode, processor, memory, -1, "DCR");
+                    } break;
+                    case (0b111): {
+                        if (((opcode & 0b00111000) >> 3) == 0b101) {
+                            complement_accumulator(processor);
+                        }
                     } break;
                     default: {
                         std::stringstream err;
                         err << "The program encountered the following illegal instruction: " << opcode << "\n";
                         throw std::runtime_error(err.str());
-                    }
+                    } break;
                 };
             } break;
 
@@ -83,5 +96,34 @@ namespace instructions {
         }
 
         std::clog << "MOV " << processor.get_register_name_by_code(dst_code) << "," << processor.get_register_name_by_code(src_code) << "\n";
+    }
+
+    void load_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+        char loc = 'D';
+        word adr = (word)(((processor.registers.D & 0xF) << 8) | processor.registers.E);
+
+        if ((opcode & 0b00010000) >> 4 == 0) {
+            adr = (word)(((processor.registers.B & 0xF) << 8) | processor.registers.C);
+            loc = 'B';
+        }
+        processor.registers.A = memory.data[adr];
+        std::clog << "LDAX " << loc << "\n";
+    }
+
+    void store_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+        char loc = 'D';
+        word adr = (word)(((processor.registers.D & 0xF) << 8) | processor.registers.E);
+        
+        if ((opcode & 0b00010000) >> 4 == 0) {
+            adr = (word)(((processor.registers.B & 0xF) << 8) | processor.registers.C);
+            loc = 'B';
+        }
+        memory.data[adr] = processor.registers.A;
+        std::clog << "STAX " << loc << "\n";
+        //std::clog << "Contents of memory location " << adr << ": " << (int)memory.data[adr] << "\n";
+    }
+
+    void complement_accumulator(Processor& processor) {
+        processor.flags.AC = ~processor.flags.AC;
     }
 }
