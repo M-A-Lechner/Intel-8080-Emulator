@@ -37,18 +37,6 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
         instructions::execute_instruction(currByte, *this, memory);
         /*
         switch(currByte) {      //TODO: move all instructions into own namespace, and as unique functions
-            case STAX_B: {
-                log_instruction("STAX B");
-                word adr = (word)(((registers.B & 0xF) << 8) | registers.C);
-                memory.data[adr] = registers.A;
-                counter_increase = 3;
-            } break;
-            case STAX_D: {
-                log_instruction("STAX D");
-                word adr = (word)(((registers.D & 0xF) << 8) | registers.E);
-                memory.data[adr] = registers.A;
-                counter_increase = 3;
-            } break;
             case LDA: {
                 log_instruction("LDA");
                 registers.A = memory.data[get_next_word(memory)];
@@ -73,26 +61,9 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
                 out_data.data[adr] = registers.A;
                 counter_increase = 1;
             } break;
-            case DCR_A: {
-                log_instruction("DCR_A");
-                if (flags.CF == 1 && registers.A == 0x00) {
-                    registers.A == UCHAR_MAX;
-                    flags.CF = 0;
-                } else {
-                    registers.A -= 1;
-                }
-                flags.S = (registers.A >> 7) & 1;
-                counter_increase = 1;
-            } break;
-            
             case STC: {
                 log_instruction("STC");
                 flags.CF = 1;
-                counter_increase = 1;
-            } break;
-            case CMC: {
-                log_instruction("CMC");
-                flags.CF = !flags.CF;
                 counter_increase = 1;
             } break;
             default: {
@@ -105,22 +76,6 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
         counter_increase = 0;
         cycles -= 1;
     }
-}
-
-void Processor::increase_by_one(byte& reg) {
-    flags.AC = (((reg & 0x0F) + 1) > 0x0F);
-
-    reg += 1;
-    flags.S = (reg >> 7) & 1;
-    flags.Z = (reg == 0) ? 1 : 0;
-
-    unsigned char v = reg;
-    bool parity = true;
-    while (v) {
-        parity = !parity;
-        v = v & (v - 1);
-    }
-    flags.P = parity;
 }
 
 byte Processor::get_next_byte(MEMORY& memory) {

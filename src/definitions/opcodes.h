@@ -46,7 +46,7 @@
 #define INR_L 0x2C
 #define DCR_L 0x2D
 
-
+#define CMA 0x2F
 
 #define STA 0x32
 
@@ -127,7 +127,21 @@
 #define MOV_A_L 0X7D
 #define MOV_A_M 0X7E
 #define MOV_A_A 0X7F
+#define ADD_B 0x80
+#define ADD_C 0x81
+#define ADD_D 0x82
+#define ADD_H 0x83
+#define ADD_L 0x84
+#define ADD_M 0x85
+#define ADD_A 0x86
 
+#define SUB_B 0x90
+#define SUB_C 0x91
+#define SUB_D 0x92
+#define SUB_H 0x93
+#define SUB_L 0x94
+#define SUB_M 0x95
+#define SUB_A 0x96
 
 #define JMP 0xC3
 #define OUT 0xD3

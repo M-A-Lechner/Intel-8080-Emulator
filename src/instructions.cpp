@@ -19,13 +19,16 @@ namespace instructions {
                         else store_instruction(opcode, processor, memory);
                     } break;
                     case (0b100): {
-                        add_sub_instruction(opcode, processor, memory, 1, "INR");
+                        inc_dec_instruction(opcode, processor, memory, 1, "INR");
                     } break;
                     case (0b101): {
-                        add_sub_instruction(opcode, processor, memory, -1, "DCR");
+                        inc_dec_instruction(opcode, processor, memory, -1, "DCR");
                     } break;
                     case (0b111): {
-                        if (((opcode & 0b00111000) >> 3) == 0b101) {
+                        byte subcode = opcode & 0b00111111;
+                        if (subcode == 0b00111111)
+                            complement_carry(processor);
+                        else if ((subcode >> 3) == 0b101) {
                             complement_accumulator(processor);
                         }
                     } break;
@@ -44,7 +47,37 @@ namespace instructions {
 
             // 0b10
             case 2: {
+                byte reg_code = (opcode & 0b00000111);
+                byte& reg = processor.get_register_by_code(memory, reg_code);
+                switch ((opcode & 0b00111000) >> 3) {
+                    case (0b000): {
+                        add_sub_instruction(opcode, processor, memory, reg, "ADD");
+                    } break;
+                    case (0b001): {
 
+                    } break;
+                    case (0b010): {
+                        add_sub_instruction(opcode, processor, memory, -reg, "SUB");
+                    } break;
+                    case (0b011): {
+
+                    } break;
+                    case (0b100): {
+
+                    } break;
+                    case (0b101): {
+
+                    } break;
+                    case (0b110): {
+
+                    } break;
+                    case (0b111): {
+
+                    } break;
+                    default: {
+
+                    } break;
+                };
             } break;
 
             // 0b11
@@ -63,10 +96,7 @@ namespace instructions {
         processor.increase_counter();
     }
 
-    void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
-        byte reg_code = ((opcode & 0b00111000) >> 3);
-        byte& reg = processor.get_register_by_code(memory, reg_code);
-
+    void adjust_value(Processor& processor, MEMORY& memory, byte& reg, byte amount) {
         processor.flags.AC = (((reg & 0x0F) + amount) > 0x0F);
 
         reg += amount;
@@ -80,7 +110,21 @@ namespace instructions {
             v = v & (v - 1);
         }
         processor.flags.P = parity;
+    }
+
+    void inc_dec_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
+        byte reg_code = ((opcode & 0b00111000) >> 3);
+        byte& reg = processor.get_register_by_code(memory, reg_code);
+
+        test_instruction(processor, memory, reg, amount);
+
         std::clog << instruction_name << " " << processor.get_register_name_by_code(reg_code) << "\n";
+    }
+
+    void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
+        test_instruction(processor, memory, processor.registers.A, amount);
+        
+        std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
     void move_instruction(byte opcode, Processor& processor, MEMORY& memory) {
@@ -124,6 +168,12 @@ namespace instructions {
     }
 
     void complement_accumulator(Processor& processor) {
-        processor.flags.AC = ~processor.flags.AC;
+        processor.registers.A = ~processor.registers.A;
+        std::clog << "CMA\n";
+    }
+
+    void complement_carry(Processor& processor) {
+        processor.flags.CF = ~processor.flags.CF;
+        std::clog << "CMC\n";
     }
 }
