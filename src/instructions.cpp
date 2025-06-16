@@ -116,13 +116,13 @@ namespace instructions {
         byte reg_code = ((opcode & 0b00111000) >> 3);
         byte& reg = processor.get_register_by_code(memory, reg_code);
 
-        test_instruction(processor, memory, reg, amount);
+        adjust_value(processor, memory, reg, amount);
 
         std::clog << instruction_name << " " << processor.get_register_name_by_code(reg_code) << "\n";
     }
 
     void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
-        test_instruction(processor, memory, processor.registers.A, amount);
+        adjust_value(processor, memory, processor.registers.A, amount);
         
         std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
