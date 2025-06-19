@@ -24,6 +24,8 @@ void Processor::reset() {
     PC = 0x0000;
     SP = 0x0000;
 
+    HALT = 0;
+
     registers.reset();
     flags.reset();
 }
@@ -32,10 +34,11 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
     unsigned char currByte;
     unsigned char counter_increase = 0;
 
-    while (cycles > 0) {
+
+    while (HALT == false) {
         currByte = memory.data[PC];
         instructions::execute_instruction(currByte, *this, memory);
-        PC += counter_increase;
+        PC += 1;
         counter_increase = 0;
         cycles -= 1;
     }
@@ -131,14 +134,14 @@ byte& Processor::get_register_by_code(MEMORY& memory, byte code) {
 
 void Processor::log_registers(MEMORY& memory) {
     std::clog << "Current register values:\n";
-    std::clog << "A: " << std::hex << (int)registers.A << "\n";
-    std::clog << "B: " << std::hex << (int)registers.B << "\n";
-    std::clog << "C: " << std::hex << (int)registers.C << "\n";
-    std::clog << "D: " << std::hex << (int)registers.D << "\n";
-    std::clog << "E: " << std::hex << (int)registers.E << "\n";
-    std::clog << "H: " << std::hex << (int)registers.H << "\n";
-    std::clog << "L: " << std::hex << (int)registers.L << "\n";
-    std::clog << "Memory: " << std::hex << (int)get_byte_at_ref(memory, (registers.L << 8) | registers.H) << "\n\n";
+    std::clog << "A: 0x" << std::hex << (int)registers.A << "\n";
+    std::clog << "B: 0x" << std::hex << (int)registers.B << "\n";
+    std::clog << "C: 0x" << std::hex << (int)registers.C << "\n";
+    std::clog << "D: 0x" << std::hex << (int)registers.D << "\n";
+    std::clog << "E: 0x" << std::hex << (int)registers.E << "\n";
+    std::clog << "H: 0x" << std::hex << (int)registers.H << "\n";
+    std::clog << "L: 0x" << std::hex << (int)registers.L << "\n";
+    std::clog << "Memory: 0x" << std::hex << (int)get_byte_at_ref(memory, (registers.L << 8) | registers.H) << "\n\n";
 }
 
 void Processor::log_flags() {
@@ -156,4 +159,5 @@ void Processor::increase_counter(byte amount) {
 
 void Processor::halt() {
     std::clog << "Processor halted.\n";
+    HALT = true;
 }

@@ -9,11 +9,9 @@
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
 #include "instructions.h"
+#include "memory.h"
 
-
-struct MEMORY {
-    byte data[65535]; // 64KiB equivalent to 0xFFFF.
-};
+//using namespace std::chrono_literals
 
 struct OUT_DATA {
     byte data[256];
@@ -53,6 +51,7 @@ struct Processor {
 
     word SP;
     word PC;
+    flag HALT;
 
     void reset();
 

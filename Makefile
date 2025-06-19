@@ -1,4 +1,4 @@
-objects = main.o intel_8080.o instructions.o
+objects = main.o intel_8080.o instructions.o memory.o
 all: $(objects)
 	$(CXX) $^ -o a.out
 

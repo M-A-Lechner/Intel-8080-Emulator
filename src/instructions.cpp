@@ -42,7 +42,9 @@ namespace instructions {
 
             // 0b01 describes all MOV instructions
             case 1: {
-                move_instruction(opcode, processor, memory);
+                if (opcode == 0x76)
+                    processor.halt();
+                else move_instruction(opcode, processor, memory);
             } break;
 
             // 0b10
@@ -97,7 +99,7 @@ namespace instructions {
 
         processor.log_registers(memory);
         processor.log_flags();
-        processor.increase_counter();
+        //processor.increase_counter();
     }
 
     void adjust_value(Processor& processor, MEMORY& memory, byte& reg, byte amount) {
@@ -133,10 +135,9 @@ namespace instructions {
 
     void sub_instruction(byte opcode, Processor& processor, MEMORY& memory, byte amount, std::string instruction_name) {
         amount = ~amount + 1;
-        std::cout << (int)amount << "\n";
         adjust_value(processor, memory, processor.registers.A, amount);
 
-        processor.flags.CF = ~processor.flags.CF;
+        //processor.flags.CF = ~processor.flags.CF;
 
         std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
