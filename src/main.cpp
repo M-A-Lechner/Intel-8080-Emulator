@@ -27,14 +27,24 @@ int main (int argc, char *argv[]) {
     cpu.reset();
     MEMORY memory{};
 
-    memory.load_file("test_binary.bin");
+    std::string filename = "test_binary.bin";
+
+    std::cout << argc << "\n";
+
+
+    if (argc == 2)
+        filename.assign(argv[1]);
+    else if (argc > 2)
+        throw std::runtime_error("Error: More than one argument given.");
+
+    memory.load_file(filename);
 
 
     IN_DATA in_data{};
     OUT_DATA out_data{};
 
     cpu.execute(12*7, memory, in_data, out_data);
-    printOutData(out_data);
+    //printOutData(out_data);
 
     return 0;
 }

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <stdexcept>
 
 #include "definitions/datatypes.h"
 

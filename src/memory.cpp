@@ -6,6 +6,8 @@ void MEMORY::load_file(std::string filename) {
 
     std::ifstream in_file;
     in_file.open(filename);
+    if (!in_file)
+        throw std::runtime_error("No file with the given filename \"" + filename + "\" was found.");
 
     byte next_byte = 0;
 

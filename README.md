@@ -16,7 +16,7 @@ There are no prebuilt options of this project available at this moment, so you w
 
 ### Build with Makefile
 
-A Makefile has been included in the root directory. Simply open your console in the root directory and enter "make". To clean any residual files from the building process enter "make clean" (this will remove all "*.cpp" and "*.o" files from the root directory, so make sure you do not have any code there you do not want to lose!).
+A Makefile has been included in the root directory. Simply open your console in the root directory and enter `make`. To clean any residual files from the building process enter `make clean` (this will remove all `*.cpp` and `*.o"` files from the root directory, so make sure you do not have any code there you do not want to lose!).
 
 ## Useage
 
