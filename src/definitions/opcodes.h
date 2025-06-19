@@ -135,6 +135,14 @@
 #define ADD_M 0x85
 #define ADD_A 0x86
 
+
+
+
+
+
+
+
+
 #define SUB_B 0x90
 #define SUB_C 0x91
 #define SUB_D 0x92
@@ -143,5 +151,55 @@
 #define SUB_M 0x95
 #define SUB_A 0x96
 
+#define ANA_B 0xA0
+#define ANA_C 0xA1
+#define ANA_D 0xA2
+#define ANA_E 0xA3
+#define ANA_H 0xA4
+#define ANA_L 0xA5
+#define ANA_M 0xA6
+#define ANA_A 0xA7
+#define XRA_B 0xA8
+#define XRA_C 0xA9
+#define XRA_D 0xAA
+#define XRA_E 0xAB
+#define XRA_H 0xAC
+#define XRA_L 0xAD
+#define XRA_M 0xAE
+#define XRA_A 0xAF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define JMP 0xC3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define OUT 0xD3

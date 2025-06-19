@@ -51,22 +51,26 @@ namespace instructions {
                 byte& reg = processor.get_register_by_code(memory, reg_code);
                 switch ((opcode & 0b00111000) >> 3) {
                     case (0b000): {
-                        add_sub_instruction(opcode, processor, memory, reg, "ADD");
+                        add_instruction(opcode, processor, memory, reg, "ADD");
                     } break;
                     case (0b001): {
-
+                        byte amount = reg + processor.flags.CF;
+                        processor.flags.CF = 0;
+                        add_instruction(opcode, processor, memory, amount, "ADC");
                     } break;
                     case (0b010): {
-                        add_sub_instruction(opcode, processor, memory, -reg, "SUB");
+                        sub_instruction(opcode, processor, memory, reg, "SUB");
                     } break;
                     case (0b011): {
-
+                        byte amount = reg + processor.flags.CF;
+                        processor.flags.CF = 0;
+                        sub_instruction(opcode, processor, memory, reg, "SBB");
                     } break;
                     case (0b100): {
-
+                        logical_and_instruction(opcode, processor, memory, reg);
                     } break;
                     case (0b101): {
-
+                        logical_xor_instruction(opcode, processor, memory, reg);
                     } break;
                     case (0b110): {
 
@@ -121,9 +125,19 @@ namespace instructions {
         std::clog << instruction_name << " " << processor.get_register_name_by_code(reg_code) << "\n";
     }
 
-    void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
+    void add_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
         adjust_value(processor, memory, processor.registers.A, amount);
         
+        std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
+    }
+
+    void sub_instruction(byte opcode, Processor& processor, MEMORY& memory, byte amount, std::string instruction_name) {
+        amount = ~amount + 1;
+        std::cout << (int)amount << "\n";
+        adjust_value(processor, memory, processor.registers.A, amount);
+
+        processor.flags.CF = ~processor.flags.CF;
+
         std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
@@ -140,6 +154,19 @@ namespace instructions {
         }
 
         std::clog << "MOV " << processor.get_register_name_by_code(dst_code) << "," << processor.get_register_name_by_code(src_code) << "\n";
+    }
+
+    void logical_and_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+        processor.registers.A = processor.registers.A & value;
+        processor.flags.CF = 0;
+
+        std::clog << "ANA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
+    }
+
+    void logical_xor_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+        processor.registers.A = processor.registers.A ^ value;
+
+        std::clog << "XRA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
     void load_instruction(byte opcode, Processor& processor, MEMORY& memory) {

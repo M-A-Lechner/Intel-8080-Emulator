@@ -17,8 +17,12 @@ namespace instructions {
     void adjust_value(Processor& processor, MEMORY& memory, byte& reg, byte amount);
 
     void inc_dec_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
-    void add_sub_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
+    void add_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
+    void sub_instruction(byte opcode, Processor& processor, MEMORY& memory, byte amount, std::string instruction_name);
     void move_instruction(byte opcode, Processor& processor, MEMORY& memory);
+
+    void logical_and_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
+    void logical_xor_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
 
     void load_instruction(byte opcode, Processor& processor, MEMORY& memory);
     void store_instruction(byte opcode, Processor& processor, MEMORY& memory);

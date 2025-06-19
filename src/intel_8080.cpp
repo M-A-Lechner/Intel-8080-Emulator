@@ -35,43 +35,6 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
     while (cycles > 0) {
         currByte = memory.data[PC];
         instructions::execute_instruction(currByte, *this, memory);
-        /*
-        switch(currByte) {      //TODO: move all instructions into own namespace, and as unique functions
-            case LDA: {
-                log_instruction("LDA");
-                registers.A = memory.data[get_next_word(memory)];
-                std::cout << "\tAccumulator: " << std::hex << (int)registers.A << "\n";
-                counter_increase = 1;
-            } break;
-            case STA: {
-                log_instruction("STA");
-                byte adr = get_next_word(memory);
-                memory.data[adr] = registers.A;
-                std::cout << "\tMemory written: " << std::hex << (int)memory.data[adr] << "\n";
-                counter_increase = 1;
-            } break;
-            case JMP: {
-                log_instruction("JMP");
-                word adr = get_next_word(memory);
-                PC = adr;
-            } break;
-            case OUT: {
-                log_instruction("OUT");
-                byte adr = get_next_byte(memory);
-                out_data.data[adr] = registers.A;
-                counter_increase = 1;
-            } break;
-            case STC: {
-                log_instruction("STC");
-                flags.CF = 1;
-                counter_increase = 1;
-            } break;
-            default: {
-                std::cerr << (int)currByte << " is an unknown instruction.\n";
-                return;
-            }
-        }
-        */
         PC += counter_increase;
         counter_increase = 0;
         cycles -= 1;
