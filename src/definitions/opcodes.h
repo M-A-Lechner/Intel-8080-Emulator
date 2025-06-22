@@ -1,6 +1,6 @@
 #pragma once
 
-#define NOP 0x00;
+#define NOP 0x00
 
 #define STAX_B 0x02
 
@@ -8,14 +8,14 @@
 #define DCR_B 0x05
 
 
-
+// NOP at 0x08
 
 #define LDAX_B 0x0A
 
 #define INR_C 0x0C
 #define DCR_C 0x0D
 
-
+// NOP at 0x10
 
 #define STAX_D 0x12
 
@@ -23,7 +23,7 @@
 #define DCR_D 0x15
 
 
-
+// NOP at 0x18
 
 #define LDAX_D 0x1A
 
@@ -31,7 +31,7 @@
 #define DCR_E 0x1D
 
 
-
+// NOP at 0x20
 
 
 
@@ -39,7 +39,7 @@
 #define DCR_H 0x25
 
 
-
+// NOP at 0x28
 
 
 
@@ -47,6 +47,7 @@
 #define DCR_L 0x2D
 
 #define CMA 0x2F
+// NOP at 0x30
 
 #define STA 0x32
 
@@ -54,7 +55,7 @@
 #define DCR_M 0x35
 
 #define STC 0x37
-
+// NOP at 0x38
 
 #define LDA 0x3A
 
@@ -62,7 +63,6 @@
 #define DCR_A 0x3D
 
 #define CMC 0x3F
-
 #define MOV_B_B 0x40
 #define MOV_B_C 0x41
 #define MOV_B_D 0x42
@@ -135,14 +135,14 @@
 #define ADD_L 0x85
 #define ADD_M 0x86
 #define ADD_A 0x87
-
-
-
-
-
-
-
-
+#define ADC_B 0x88
+#define ADC_C 0x89
+#define ADC_D 0x8A
+#define ADC_E 0x8B
+#define ADC_H 0x8C
+#define ADC_L 0x8D
+#define ADC_M 0x8E
+#define ADC_A 0x8F
 #define SUB_B 0x90
 #define SUB_C 0x91
 #define SUB_D 0x92
@@ -151,7 +151,14 @@
 #define SUB_L 0x95
 #define SUB_M 0x96
 #define SUB_A 0x97
-
+#define SBB_B 0x98
+#define SBB_C 0x99
+#define SBB_D 0x9A
+#define SBB_E 0x9B
+#define SBB_H 0x9C
+#define SBB_L 0x9D
+#define SBB_M 0x9E
+#define SBB_A 0x9F
 #define ANA_B 0xA0
 #define ANA_C 0xA1
 #define ANA_D 0xA2
@@ -168,6 +175,22 @@
 #define XRA_L 0xAD
 #define XRA_M 0xAE
 #define XRA_A 0xAF
+#define ORA_B 0xB0
+#define ORA_C 0xB1
+#define ORA_D 0xB2
+#define ORA_E 0xB3
+#define ORA_H 0xB4
+#define ORA_L 0xB5
+#define ORA_M 0xB6
+#define ORA_A 0xB7
+#define CMP_B 0xB8
+#define CMP_C 0xB9
+#define CMP_D 0xBA
+#define CMP_E 0xBB
+#define CMP_H 0xBC
+#define CMP_L 0xBD
+#define CMP_M 0xBE
+#define CMP_A 0xBF
 
 
 

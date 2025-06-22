@@ -22,6 +22,9 @@ A Makefile has been included in the root directory. Simply open your console in 
 
 After building the program, you can start it by typing `./{program_name}` in your terminal. The program will automatically look for a binary file to read instructions from, and will execute the instructions it finds within.
 
+If you wish to read a specific binary file just pass the file path as an argument when starting the program.\
+Your command should look like this: `./{program name} "{path to file}"` (The quotations are optional if there are no spaces in your path file).
+
 ### Creating a binary file
 
 The binary file must only contain instructions that the processor can read. There are many resources online which describe the operation codes that the processor will understand. At the moment, the binary file must have the filename `test_binary.bin`. The program will fill its internal memory, with an address space of two bytes, with these instructions. If more instructions are loaded than fit into this address space, the program will crash. All programs must end with a `halt`instruction.
@@ -45,3 +48,5 @@ Instructions that have a "not tested" marker, may seem work as expected, however
 - [x] SBB (not tested)
 - [x] ANA (partially tested)
 - [x] XRA (not tested)
+- [x] ORA (not tested)
+- [x] CMP (not tested)

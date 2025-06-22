@@ -4,98 +4,94 @@
 
 namespace instructions {
     void execute_instruction(byte opcode, Processor& processor, MEMORY& memory) {
-        
-        switch (byte operation_area = opcode >> 6) {
-            
-            // 0b00
-            case 0: {
-                switch (opcode & 0b00000111) {
-                    case (0b000): {
-                        std::clog << "NOP\n";
-                    } break;
-                    case (0b010): {
-                        if ((opcode & 0b00001000) >> 3 == 1)
-                            load_instruction(opcode, processor, memory);
-                        else store_instruction(opcode, processor, memory);
-                    } break;
-                    case (0b100): {
-                        inc_dec_instruction(opcode, processor, memory, 1, "INR");
-                    } break;
-                    case (0b101): {
-                        inc_dec_instruction(opcode, processor, memory, -1, "DCR");
-                    } break;
-                    case (0b111): {
-                        byte subcode = opcode & 0b00111111;
-                        if (subcode == 0b00111111)
-                            complement_carry(processor);
-                        else if ((subcode >> 3) == 0b101) {
-                            complement_accumulator(processor);
-                        }
-                    } break;
-                    default: {
-                        std::stringstream err;
-                        err << "The program encountered the following illegal instruction: " << opcode << "\n";
-                        throw std::runtime_error(err.str());
-                    } break;
-                };
-            } break;
+        if (opcode == HLT) processor.halt();
 
-            // 0b01 describes all MOV instructions
-            case 1: {
-                if (opcode == 0x76)
-                    processor.halt();
-                else move_instruction(opcode, processor, memory);
-            } break;
+        else if (opcode >> 6 == 0b01) move_instruction(opcode, processor, memory);
 
-            // 0b10
-            case 2: {
-                byte reg_code = (opcode & 0b00000111);
-                byte& reg = processor.get_register_by_code(memory, reg_code);
-                switch ((opcode & 0b00111000) >> 3) {
-                    case (0b000): {
-                        add_instruction(opcode, processor, memory, reg, "ADD");
-                    } break;
-                    case (0b001): {
-                        byte amount = reg + processor.flags.CF;
-                        processor.flags.CF = 0;
-                        add_instruction(opcode, processor, memory, amount, "ADC");
-                    } break;
-                    case (0b010): {
-                        sub_instruction(opcode, processor, memory, reg, "SUB");
-                    } break;
-                    case (0b011): {
-                        byte amount = reg + processor.flags.CF;
-                        processor.flags.CF = 0;
-                        sub_instruction(opcode, processor, memory, reg, "SBB");
-                    } break;
-                    case (0b100): {
-                        logical_and_instruction(opcode, processor, memory, reg);
-                    } break;
-                    case (0b101): {
-                        logical_xor_instruction(opcode, processor, memory, reg);
-                    } break;
-                    case (0b110): {
-
-                    } break;
-                    case (0b111): {
-
-                    } break;
-                    default: {
-
-                    } break;
-                };
-            } break;
-
-            // 0b11
-            case 3: {
-
-            } break;
-            default: {
-                std::stringstream err;
-                err << "The program encountered the following illegal instruction: " << opcode << "\n";
-                throw std::runtime_error(err.str());
+        else if (opcode >= ADD_B & opcode <= CMP_A) {
+            byte reg_code = (opcode & 0b00000111);
+            byte& reg = processor.get_register_by_code(memory, reg_code);
+            switch ((opcode & 0b00111000) >> 3) {
+                case (0b000): {
+                    add_instruction(opcode, processor, memory, reg, "ADD");
+                } break;
+                case (0b001): {
+                    byte amount = reg + processor.flags.CF;
+                    processor.flags.CF = 0;
+                    add_instruction(opcode, processor, memory, amount, "ADC");
+                } break;
+                case (0b010): {
+                    sub_instruction(opcode, processor, memory, reg, "SUB");
+                } break;
+                case (0b011): {
+                    byte amount = reg + processor.flags.CF;
+                    processor.flags.CF = 0;
+                    sub_instruction(opcode, processor, memory, reg, "SBB");
+                } break;
+                case (0b100): {
+                    logical_and_instruction(opcode, processor, memory, reg);
+                } break;
+                case (0b101): {
+                    logical_xor_instruction(opcode, processor, memory, reg);
+                } break;
+                case (0b110): {
+                    logical_or_instruction(opcode, processor, memory, reg);
+                } break;
+                case (0b111): {
+                    compare_instruction(opcode, processor, memory, reg);
+                } break;
+                default: break;
             }
-        };
+        }
+        else {
+            switch (byte operation_area = opcode >> 6) {
+                
+                // 0b00
+                case 0: {
+                    switch (opcode & 0b00000111) {
+                        case (0b000): {
+                            std::clog << "NOP\n";
+                        } break;
+                        case (0b010): {
+                            if ((opcode & 0b00001000) >> 3 == 1)
+                                load_instruction(opcode, processor, memory);
+                            else store_instruction(opcode, processor, memory);
+                        } break;
+                        case (0b100): {
+                            inc_dec_instruction(opcode, processor, memory, 1, "INR");
+                        } break;
+                        case (0b101): {
+                            inc_dec_instruction(opcode, processor, memory, -1, "DCR");
+                        } break;
+                        case (0b111): {
+                            switch (opcode & 0b00100000) {
+                                case (0b0): {
+                                    
+                                } break;
+                                case (0b1): {
+                                    byte subcode = opcode & 0b00111111;
+                                    if (subcode == 0b00111111)
+                                        complement_carry(processor);
+                                    else if ((subcode >> 3) == 0b101) {
+                                        complement_accumulator(processor);
+                                    }
+                                }
+                            };
+                        } break;
+                        default: {
+                            std::stringstream err;
+                            err << "The program encountered the following illegal instruction: " << opcode << "\n";
+                            throw std::runtime_error(err.str());
+                        } break;
+                    };
+                } break;
+                default: {
+                    std::stringstream err;
+                    err << "The program encountered the following illegal instruction: " << opcode << "\n";
+                    throw std::runtime_error(err.str());
+                }
+            };
+        }
 
         processor.log_registers(memory);
         processor.log_flags();
@@ -168,6 +164,16 @@ namespace instructions {
         processor.registers.A = processor.registers.A ^ value;
 
         std::clog << "XRA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
+    }
+
+    void logical_or_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+        processor.registers.A = processor.registers.A || value;
+
+        std::clog << "ORA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
+    }
+
+    void compare_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+        sub_instruction(opcode, processor, memory, value, "CMP");
     }
 
     void load_instruction(byte opcode, Processor& processor, MEMORY& memory) {

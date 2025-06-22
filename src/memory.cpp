@@ -13,7 +13,7 @@ void MEMORY::load_file(std::string filename) {
 
     while (in_file >> std::hex >> next_byte) {
         
-        std::clog << "Current byte: " << std::hex << next_byte << "\n";
+        std::clog << "Current byte: " << std::hex << (int)next_byte << "\n";
         data[address] = next_byte;
         address += 1;
     }

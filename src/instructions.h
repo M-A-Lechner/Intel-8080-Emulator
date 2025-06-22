@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "definitions/datatypes.h"
+#include "definitions/opcodes.h"
 #include "processor.h"
 
 struct MEMORY;
@@ -23,6 +24,8 @@ namespace instructions {
 
     void logical_and_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
     void logical_xor_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
+    void logical_or_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
+    void compare_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
 
     void load_instruction(byte opcode, Processor& processor, MEMORY& memory);
     void store_instruction(byte opcode, Processor& processor, MEMORY& memory);
