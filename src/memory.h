@@ -2,13 +2,15 @@
 
 #include <iostream>
 #include <fstream>
-#include <memory>
 #include <stdexcept>
+#include <array>
 
 #include "definitions/datatypes.h"
 
 struct MEMORY {
-    byte data[65535]; // 64KiB equivalent to 0xFFFF.
+    std::array<byte, 65535> data; // 64KiB equivalent to 0xFFFF.
+
+    void reset();
 
     void load_file(std::string filename);
 };

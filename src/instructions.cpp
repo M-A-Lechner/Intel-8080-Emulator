@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "instructions.h"
 
 namespace instructions {
@@ -60,8 +58,10 @@ namespace instructions {
             throw std::runtime_error(err.str());
         }
 
-        processor.log_registers(memory);
-        processor.log_flags();
+        if (processor.DEBUG_MODE) {
+            processor.log_registers(memory);
+            processor.log_flags();
+        }
         //processor.increase_counter();
     }
 
@@ -165,7 +165,6 @@ namespace instructions {
         }
         memory.data[adr] = processor.registers.A;
         std::clog << "STAX " << loc << "\n";
-        //std::clog << "Contents of memory location " << adr << ": " << (int)memory.data[adr] << "\n";
     }
 
     void complement_accumulator(Processor& processor) {

@@ -1,6 +1,7 @@
 #include "memory.h"
 
 
+
 void MEMORY::load_file(std::string filename) {
     word address = 0x0000;
 
@@ -19,4 +20,9 @@ void MEMORY::load_file(std::string filename) {
     }
 
     in_file.close();
+}
+
+
+void MEMORY::reset() {
+    data.fill(0);
 }

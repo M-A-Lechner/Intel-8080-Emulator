@@ -30,7 +30,7 @@ void Processor::reset() {
     flags.reset();
 }
 
-void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void Processor::execute(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
     unsigned char currByte;
     unsigned char counter_increase = 0;
 
@@ -40,7 +40,6 @@ void Processor::execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& 
         instructions::execute_instruction(currByte, *this, memory);
         PC += 1;
         counter_increase = 0;
-        cycles -= 1;
     }
 }
 
@@ -160,4 +159,12 @@ void Processor::increase_counter(byte amount) {
 void Processor::halt() {
     std::clog << "Processor halted.\n";
     HALT = true;
+}
+
+void IN_DATA::reset() {
+    data.fill(0);
+}
+
+void OUT_DATA::reset() {
+    data.fill(0);
 }

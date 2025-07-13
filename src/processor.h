@@ -5,20 +5,23 @@
 #include <string>
 #include <limits.h>
 #include <memory>
+#include <array>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
 #include "instructions.h"
 #include "memory.h"
 
-//using namespace std::chrono_literals
-
 struct OUT_DATA {
-    byte data[256];
+    std::array<byte, 256> data;
+
+    void reset();
 };
 
 struct IN_DATA {
-    byte data[256];
+    std::array<byte, 256> data;
+
+    void reset();
 };
 
 
@@ -46,6 +49,8 @@ struct Processor {
         void reset();
     };
 
+    bool DEBUG_MODE = false;
+
     Registers registers;
     Flags flags;
 
@@ -55,7 +60,7 @@ struct Processor {
 
     void reset();
 
-    void execute(int cycles, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
+    void execute(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
 
     /**
      * Increases given register value by one.
