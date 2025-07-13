@@ -3,7 +3,7 @@ all: $(objects)
 	$(CXX) $^ -o a.out
 
 $(objects): %.o: %.cpp
-	$(CXX) -c src/$^ -o $@
+	$(CXX) -std=c++20 -c src/$^ -o $@
 
 %.cpp:
 	touch src/$@

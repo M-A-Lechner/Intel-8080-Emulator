@@ -4,93 +4,60 @@
 
 namespace instructions {
     void execute_instruction(byte opcode, Processor& processor, MEMORY& memory) {
-        if (opcode == HLT) processor.halt();
+        byte reg_code = (opcode & 0b00000111);
+        byte& reg = processor.get_register_by_code(memory, reg_code);
 
-        else if (opcode >> 6 == 0b01) move_instruction(opcode, processor, memory);
+        if (opcode == NOP) std::clog << "NOP\n";
 
-        else if (opcode >= ADD_B & opcode <= CMP_A) {
-            byte reg_code = (opcode & 0b00000111);
-            byte& reg = processor.get_register_by_code(memory, reg_code);
-            switch ((opcode & 0b00111000) >> 3) {
-                case (0b000): {
-                    add_instruction(opcode, processor, memory, reg, "ADD");
-                } break;
-                case (0b001): {
-                    byte amount = reg + processor.flags.CF;
-                    processor.flags.CF = 0;
-                    add_instruction(opcode, processor, memory, amount, "ADC");
-                } break;
-                case (0b010): {
-                    sub_instruction(opcode, processor, memory, reg, "SUB");
-                } break;
-                case (0b011): {
-                    byte amount = reg + processor.flags.CF;
-                    processor.flags.CF = 0;
-                    sub_instruction(opcode, processor, memory, reg, "SBB");
-                } break;
-                case (0b100): {
-                    logical_and_instruction(opcode, processor, memory, reg);
-                } break;
-                case (0b101): {
-                    logical_xor_instruction(opcode, processor, memory, reg);
-                } break;
-                case (0b110): {
-                    logical_or_instruction(opcode, processor, memory, reg);
-                } break;
-                case (0b111): {
-                    compare_instruction(opcode, processor, memory, reg);
-                } break;
-                default: break;
-            }
+        else if (opcode == HLT) processor.halt();
+
+        else if (std::ranges::binary_search(mov_opcodes, opcode)) move_instruction(opcode, processor, memory);
+
+        else if (std::ranges::binary_search(add_opcodes, opcode)) add_instruction(opcode, processor, memory, reg, "ADD");
+
+        else if (std::ranges::binary_search(adc_opcodes, opcode)) {
+            byte amount = reg + processor.flags.CF;
+            processor.flags.CF = 0;
+            add_instruction(opcode, processor, memory, amount, "ADC");
         }
+
+        else if (std::ranges::binary_search(sub_opcodes, opcode)) sub_instruction(opcode, processor, memory, reg, "SUB");
+
+        else if (std::ranges::binary_search(sbb_opcodes, opcode)) {
+            byte amount = reg + processor.flags.CF;
+            processor.flags.CF = 0;
+            sub_instruction(opcode, processor, memory, reg, "SBB");
+        }
+
+
+        else if (std::ranges::binary_search(ana_opcodes, opcode)) logical_and_instruction(opcode, processor, memory, reg);
+
+        else if (std::ranges::binary_search(xra_opcodes, opcode)) logical_xor_instruction(opcode, processor, memory, reg);
+
+        else if (std::ranges::binary_search(ora_opcodes, opcode)) logical_or_instruction(opcode, processor, memory, reg);
+
+        else if (std::ranges::binary_search(cmp_opcodes, opcode)) compare_instruction(opcode, processor, memory, reg);
+
+
+        else if (std::ranges::binary_search(ldax_opcodes, opcode)) load_instruction(opcode, processor, memory);
+
+        else if (std::ranges::binary_search(stax_opcodes, opcode)) store_instruction(opcode, processor, memory);
+
+
+        else if (std::ranges::binary_search(inr_opcodes, opcode)) inc_dec_instruction(opcode, processor, memory, 1, "INR");
+
+        else if (std::ranges::binary_search(dcr_opcodes, opcode)) inc_dec_instruction(opcode, processor, memory, -1, "DCR");
+
+        else if (opcode == CMC) complement_carry(processor);
+
+        else if (opcode == STC) set_carry(processor);
+
+        else if (opcode == CMA) complement_accumulator(processor);
+
         else {
-            switch (byte operation_area = opcode >> 6) {
-                
-                // 0b00
-                case 0: {
-                    switch (opcode & 0b00000111) {
-                        case (0b000): {
-                            std::clog << "NOP\n";
-                        } break;
-                        case (0b010): {
-                            if ((opcode & 0b00001000) >> 3 == 1)
-                                load_instruction(opcode, processor, memory);
-                            else store_instruction(opcode, processor, memory);
-                        } break;
-                        case (0b100): {
-                            inc_dec_instruction(opcode, processor, memory, 1, "INR");
-                        } break;
-                        case (0b101): {
-                            inc_dec_instruction(opcode, processor, memory, -1, "DCR");
-                        } break;
-                        case (0b111): {
-                            switch (opcode & 0b00100000) {
-                                case (0b0): {
-                                    
-                                } break;
-                                case (0b1): {
-                                    byte subcode = opcode & 0b00111111;
-                                    if (subcode == 0b00111111)
-                                        complement_carry(processor);
-                                    else if ((subcode >> 3) == 0b101) {
-                                        complement_accumulator(processor);
-                                    }
-                                }
-                            };
-                        } break;
-                        default: {
-                            std::stringstream err;
-                            err << "The program encountered the following illegal instruction: " << opcode << "\n";
-                            throw std::runtime_error(err.str());
-                        } break;
-                    };
-                } break;
-                default: {
-                    std::stringstream err;
-                    err << "The program encountered the following illegal instruction: " << opcode << "\n";
-                    throw std::runtime_error(err.str());
-                }
-            };
+            std::stringstream err;
+            err << "The program encountered the following illegal instruction: " << opcode << "\nThe program should never have reached this point.\nPlease report this error to the current maintainer.\n";
+            throw std::runtime_error(err.str());
         }
 
         processor.log_registers(memory);
@@ -209,5 +176,10 @@ namespace instructions {
     void complement_carry(Processor& processor) {
         processor.flags.CF = ~processor.flags.CF;
         std::clog << "CMC\n";
+    }
+
+    void set_carry(Processor& processor) {
+        processor.flags.CF = 1;
+        std::clog << "CMA\n";
     }
 }

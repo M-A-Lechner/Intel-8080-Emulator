@@ -1,67 +1,66 @@
-#pragma once
-
 #define NOP 0x00
-
+#define LXI_B_D16 0x01
 #define STAX_B 0x02
-
+#define INX_B 0x03
 #define INR_B 0x04
 #define DCR_B 0x05
-
-
-// NOP at 0x08
-
+#define MVI_B_D8 0x06
+#define RLC 0x07
+//#define - 0x08
+#define DAD_B 0x09
 #define LDAX_B 0x0A
-
+#define DCX_B 0x0B
 #define INR_C 0x0C
 #define DCR_C 0x0D
-
-// NOP at 0x10
-
+#define MVI_C_D8 0x0E
+#define RRC 0x0F
+//#define - 0x10
+#define LXI_D_D16 0x11
 #define STAX_D 0x12
-
+#define INX_D 0x13
 #define INR_D 0x14
 #define DCR_D 0x15
-
-
-// NOP at 0x18
-
+#define MVI_D_D8 0x16
+#define RAL 0x17
+//#define - 0x18
+#define DAD_D 0x19
 #define LDAX_D 0x1A
-
+#define DCX_D 0x1B
 #define INR_E 0x1C
 #define DCR_E 0x1D
-
-
-// NOP at 0x20
-
-
-
+#define MVI_E_D8 0x1E
+#define RAR 0x1F
+//#define - 0x20
+#define LXI_H_D16 0x21
+#define SHLD_adr 0x22
+#define INX_H 0x23
 #define INR_H 0x24
 #define DCR_H 0x25
-
-
-// NOP at 0x28
-
-
-
+#define MVI_H_D8 0x26
+#define DAA 0x27
+//#define - 0x28
+#define DAD_H 0x29
+#define LHLD_adr 0x2A
+#define DCX_H 0x2B
 #define INR_L 0x2C
 #define DCR_L 0x2D
-
+#define MVI_L_D8 0x2E
 #define CMA 0x2F
-// NOP at 0x30
-
-#define STA 0x32
-
+//#define - 0x30
+#define LXI_SP_D16 0x31
+#define STA_adr 0x32
+#define INX_SP 0x33
 #define INR_M 0x34
 #define DCR_M 0x35
-
+#define MVI_M_D8 0x36
 #define STC 0x37
-// NOP at 0x38
-
-#define LDA 0x3A
-
+//#define - 0x38
+#define DAD_SP 0x39
+#define LDA_adr 0x3A
+#define DCX_SP 0x3B
 #define INR_A 0x3C
 #define DCR_A 0x3D
-
+#define MVI_A_D8 0x3E
 #define CMC 0x3F
 #define MOV_B_B 0x40
 #define MOV_B_C 0x41
@@ -191,39 +190,67 @@
 #define CMP_L 0xBD
 #define CMP_M 0xBE
 #define CMP_A 0xBF
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#define JMP 0xC3
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#define OUT 0xD3
+#define RNZ 0xC0
+#define POP_B 0xC1
+#define JNZ_adr 0xC2
+#define JMP_adr 0xC3
+#define CNZ_adr 0xC4
+#define PUSH_B 0xC5
+#define ADI_D8 0xC6
+#define RST_0 0xC7
+#define RZ 0xC8
+#define RET 0xC9
+#define JZ_adr 0xCA
+//#define - 0xCB
+#define CZ_adr 0xCC
+#define CALL_adr 0xCD
+#define ACI_D8 0xCE
+#define RST_1 0xCF
+#define RNC 0xD0
+#define POP_D 0xD1
+#define JNC_adr 0xD2
+#define OUT_D8 0xD3
+#define CNC_adr 0xD4
+#define PUSH_D 0xD5
+#define SUI_D8 0xD6
+#define RST_2 0xD7
+#define RC 0xD8
+//#define - 0xD9
+#define JC_adr 0xDA
+#define IN_D8 0xDB
+#define CC_adr 0xDC
+//#define - 0xDD
+#define SBI_D8 0xDE
+#define RST_3 0xDF
+#define RPO 0xE0
+#define POP_H 0xE1
+#define JPO_adr 0xE2
+#define XTHL 0xE3
+#define CPO_adr 0xE4
+#define PUSH_H 0xE5
+#define ANI_D8 0xE6
+#define RST_4 0xE7
+#define RPE 0xE8
+#define PCHL 0xE9
+#define JPE_adr 0xEA
+#define XCHG 0xEB
+#define CPE_adr 0xEC
+//#define - 0xED
+#define XRI_D8 0xEE
+#define RST_5 0xEF
+#define RP 0xF0
+#define POP_PSW 0xF1
+#define JP_adr 0xF2
+#define DI 0xF3
+#define CP_adr 0xF4
+#define PUSH_PSW 0xF5
+#define ORI_D8 0xF6
+#define RST_6 0xF7
+#define RM 0xF8
+#define SPHL 0xF9
+#define JM_adr 0xFA
+#define EI 0xFB
+#define CM_adr 0xFC
+//#define - 0xFD
+#define CPI_D8 0xFE
+#define RST_7 0xFF

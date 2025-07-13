@@ -4,6 +4,9 @@
 #include <sstream>
 #include <string>
 #include <memory>
+#include <array>
+#include <algorithm>
+#include <ranges>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
@@ -11,6 +14,26 @@
 
 struct MEMORY;
 struct Processor;
+
+
+constexpr auto mov_opcodes = std::to_array({MOV_B_B, MOV_B_C, MOV_B_D, MOV_B_E, MOV_B_H, MOV_B_L, MOV_B_M, MOV_B_A, MOV_C_B, MOV_C_C, MOV_C_D, MOV_C_E, MOV_C_H, MOV_C_L, MOV_C_M, MOV_C_A, MOV_D_B, MOV_D_C, MOV_D_D, MOV_D_E, MOV_D_H, MOV_D_L, MOV_D_M, MOV_D_A, MOV_E_B, MOV_E_C, MOV_E_D, MOV_E_E, MOV_E_H, MOV_E_L, MOV_E_M, MOV_E_A, MOV_H_B, MOV_H_C, MOV_H_D, MOV_H_E, MOV_H_H, MOV_H_L, MOV_H_M, MOV_H_A, MOV_L_B, MOV_L_C, MOV_L_D, MOV_L_E, MOV_L_H, MOV_L_L, MOV_L_M, MOV_L_A, MOV_M_B, MOV_M_C, MOV_M_D, MOV_M_E, MOV_M_H, MOV_M_L, MOV_M_A, MOV_A_B, MOV_A_C, MOV_A_D, MOV_A_E, MOV_A_H, MOV_A_L, MOV_A_M, MOV_A_A});
+constexpr auto add_opcodes = std::to_array({ADD_B, ADD_C, ADD_D, ADD_E, ADD_H, ADD_L, ADD_M, ADD_A});
+constexpr auto adc_opcodes = std::to_array({ADC_B, ADC_C, ADC_D, ADC_E, ADC_H, ADC_L, ADC_M, ADC_A});
+constexpr auto sub_opcodes = std::to_array({SUB_B, SUB_C, SUB_D, SUB_E, SUB_H, SUB_L, SUB_M, SUB_A});
+constexpr auto sbb_opcodes = std::to_array({SBB_B, SBB_C, SBB_D, SBB_E, SBB_H, SBB_L, SBB_M, SBB_A});
+
+constexpr auto ana_opcodes = std::to_array({ANA_B, ANA_C, ANA_D, ANA_E, ANA_H, ANA_L, ANA_M, ANA_A});
+constexpr auto xra_opcodes = std::to_array({XRA_B, XRA_C, XRA_D, XRA_E, XRA_H, XRA_L, XRA_M, XRA_A});
+constexpr auto ora_opcodes = std::to_array({ORA_B, ORA_C, ORA_D, ORA_E, ORA_H, ORA_L, ORA_M, ORA_A});
+constexpr auto cmp_opcodes = std::to_array({CMP_B, CMP_C, CMP_D, CMP_E, CMP_H, CMP_L, CMP_M, CMP_A});
+
+constexpr auto inr_opcodes = std::to_array({INR_B, INR_C, INR_D, INR_E, INR_H, INR_L, INR_M, INR_A});
+constexpr auto dcr_opcodes = std::to_array({DCR_B, DCR_C, DCR_D, DCR_E, DCR_H, DCR_L, DCR_M, DCR_A});
+
+
+
+constexpr auto ldax_opcodes = std::to_array({LDAX_B, LDAX_D});
+constexpr auto stax_opcodes = std::to_array({STAX_B, STAX_D});
 
 namespace instructions {
     extern void execute_instruction(byte opcode, Processor& processor, MEMORY& memory);
@@ -32,4 +55,5 @@ namespace instructions {
 
     void complement_accumulator(Processor& processor);
     void complement_carry(Processor& processor);
+    void set_carry(Processor& processor);
 }

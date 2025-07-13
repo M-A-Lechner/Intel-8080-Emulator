@@ -12,11 +12,14 @@ Future goals would be to implement a compiler, so that assembly code can be writ
 Currently all code has only been built and tested in Linux, so I cannot guarantee that it will build on any other operating system.\
 It is planned however that support for Windows and MacOS will be added.
 
+**This project will only build with versions >= C++20.**
+
 There are no prebuilt options of this project available at this moment, so you will have to build the project yourself. This is possible with the included makefile or with GCC. Other ways of building have not been tested yet, so do so at your own risk!
 
 ### Build with Makefile
 
-A Makefile has been included in the root directory. Simply open your console in the root directory and enter `make`. To clean any residual files from the building process enter `make clean` (this will remove all `*.cpp` and `*.o"` files from the root directory, so make sure you do not have any code there you do not want to lose!).
+A Makefile has been included in the root directory. The Makefile will build the project automatically with C++20, you can change this manually to a higher version if you so desire. A lower version however will not work.\
+Simply open your console in the root directory and enter `make`. To clean any residual files from the building process enter `make clean` (this will remove all `*.cpp` and `*.o"` files from the root directory, so make sure you do not have any code there you do not want to lose!).
 
 ## Useage
 
@@ -32,6 +35,8 @@ The binary file must only contain instructions that the processor can read. Ther
 In the future, I plan to implement a simple assembly interpreter, to more easily create programs for the processor.
 
 ## Implemented instructions
+
+**~ 61%** of all 256 instructions have been implemented.
 
 Please check this chapter to see which instructions are functional, even though an instruction might be listed in "opcodes.h", it may not be implemented yet.\
 Instructions that have a "not tested" marker, may seem work as expected, however their behaviour regarding reading memory and updating flags have not been thoroughly tested.
@@ -50,3 +55,4 @@ Instructions that have a "not tested" marker, may seem work as expected, however
 - [x] XRA (not tested)
 - [x] ORA (not tested)
 - [x] CMP (not tested)
+- [x] CMA (not tested)
