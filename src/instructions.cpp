@@ -1,60 +1,14 @@
 #include "instructions.h"
 
 namespace instructions {
-    void execute_instruction(byte opcode, Processor& processor, MEMORY& memory) {
-        byte reg_code = (opcode & 0b00000111);
-        byte& reg = processor.get_register_by_code(memory, reg_code);
+    std::function<void(little_byte, Processor&, MEMORY&)> instruction_table[256] = {nullptr};
 
-        if (opcode == NOP) std::clog << "NOP\n";
-
-        else if (opcode == HLT) processor.halt();
-
-        else if (std::ranges::binary_search(mov_opcodes, opcode)) move_instruction(opcode, processor, memory);
-
-        else if (std::ranges::binary_search(add_opcodes, opcode)) add_instruction(opcode, processor, memory, reg, "ADD");
-
-        else if (std::ranges::binary_search(adc_opcodes, opcode)) {
-            byte amount = reg + processor.flags.CF;
-            processor.flags.CF = 0;
-            add_instruction(opcode, processor, memory, amount, "ADC");
-        }
-
-        else if (std::ranges::binary_search(sub_opcodes, opcode)) sub_instruction(opcode, processor, memory, reg, "SUB");
-
-        else if (std::ranges::binary_search(sbb_opcodes, opcode)) {
-            byte amount = reg + processor.flags.CF;
-            processor.flags.CF = 0;
-            sub_instruction(opcode, processor, memory, reg, "SBB");
-        }
-
-
-        else if (std::ranges::binary_search(ana_opcodes, opcode)) logical_and_instruction(opcode, processor, memory, reg);
-
-        else if (std::ranges::binary_search(xra_opcodes, opcode)) logical_xor_instruction(opcode, processor, memory, reg);
-
-        else if (std::ranges::binary_search(ora_opcodes, opcode)) logical_or_instruction(opcode, processor, memory, reg);
-
-        else if (std::ranges::binary_search(cmp_opcodes, opcode)) compare_instruction(opcode, processor, memory, reg);
-
-
-        else if (std::ranges::binary_search(ldax_opcodes, opcode)) load_instruction(opcode, processor, memory);
-
-        else if (std::ranges::binary_search(stax_opcodes, opcode)) store_instruction(opcode, processor, memory);
-
-
-        else if (std::ranges::binary_search(inr_opcodes, opcode)) inc_dec_instruction(opcode, processor, memory, 1, "INR");
-
-        else if (std::ranges::binary_search(dcr_opcodes, opcode)) inc_dec_instruction(opcode, processor, memory, -1, "DCR");
-
-        else if (opcode == CMC) complement_carry(processor);
-
-        else if (opcode == STC) set_carry(processor);
-
-        else if (opcode == CMA) complement_accumulator(processor);
-
+    void execute_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
+        if (auto& handler = instruction_table[opcode])
+            handler(opcode, processor, memory);
         else {
             std::stringstream err;
-            err << "The program encountered the following illegal instruction: " << opcode << "\nThe program should never have reached this point.\nPlease report this error to the current maintainer.\n";
+            err << "The program encountered the following illegal instruction: " << (int)opcode << "\nThe program should never have reached this point.\nPlease report this error to the current maintainer.\n";
             throw std::runtime_error(err.str());
         }
 
@@ -65,14 +19,84 @@ namespace instructions {
         //processor.increase_counter();
     }
 
-    void adjust_value(Processor& processor, MEMORY& memory, byte& reg, byte amount) {
+    void init_instruction_table() {
+        // Lambda function to retrieve the reference of a register, depending on the value of opcode.
+        auto get_reg = [](little_byte opcode, Processor& processor, MEMORY& memory) -> little_byte& {
+            return processor.get_register_by_code(memory, opcode & 0b00000111);
+        };
+
+        instruction_table[NOP] = INSTRUCTION_PARAMS { std::clog << "NOP\n"; };
+        instruction_table[HLT] = INSTRUCTION_PARAMS { processor.halt(); };
+
+        for (little_byte opcode: mov_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { move_instruction(opcode, processor, memory); };
+
+        for (little_byte opcode: add_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { add_instruction(opcode, processor, memory, get_reg(opcode, processor, memory), "ADD"); };
+
+        for (little_byte opcode: adc_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS {
+                little_byte& reg = get_reg(opcode, processor, memory);
+                little_byte amount = reg + processor.flags.CF;
+                processor.flags.CF = 0;
+                add_instruction(opcode, processor, memory, amount, "ADC");
+            };
+
+        for (little_byte opcode: sub_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { sub_instruction(opcode, processor, memory, get_reg(opcode, processor, memory), "SUB"); };
+
+        for (little_byte opcode: sbb_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS {
+                little_byte& reg = get_reg(opcode, processor, memory);
+                little_byte amount = reg + processor.flags.CF;
+                processor.flags.CF = 0;
+                sub_instruction(opcode, processor, memory, reg, "SBB");
+            };
+
+        for (little_byte opcode: ana_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { logical_and_instruction(opcode, processor, memory, get_reg(opcode, processor, memory)); };
+
+        for (little_byte opcode: xra_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { logical_xor_instruction(opcode, processor, memory, get_reg(opcode, processor, memory)); };
+
+        for (little_byte opcode: ora_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { logical_or_instruction(opcode, processor, memory, get_reg(opcode, processor, memory)); };
+
+        for (little_byte opcode: cmp_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { compare_instruction(opcode, processor, memory, get_reg(opcode, processor, memory)); };
+
+        for (little_byte opcode: inr_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { inc_dec_instruction(opcode, processor, memory, 1, "INR"); };
+
+        for (little_byte opcode: dcr_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { inc_dec_instruction(opcode, processor, memory, -1, "DCR"); };
+
+        for (little_byte opcode: ldax_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { load_instruction(opcode, processor, memory); };
+
+        for (little_byte opcode: stax_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { store_instruction(opcode, processor, memory); };
+
+        // Carry Instructions
+        instruction_table[CMC] = INSTRUCTION_PARAMS { complement_carry(processor); };
+        instruction_table[STC] = INSTRUCTION_PARAMS { set_carry(processor); };
+        instruction_table[CMA] = INSTRUCTION_PARAMS { complement_accumulator(processor); };
+        
+        // Accumulator Rotation Instructions
+        instruction_table[RLC] = INSTRUCTION_PARAMS { rotate_accumulator_left(processor); };
+        instruction_table[RRC] = INSTRUCTION_PARAMS { rotate_accumulator_right(processor); };
+        instruction_table[RAL] = INSTRUCTION_PARAMS { rotate_accumulator_left_carry(processor); };
+        instruction_table[RAR] = INSTRUCTION_PARAMS { rotate_accumulator_right_carry(processor); };
+    }
+
+    void adjust_value(Processor& processor, MEMORY& memory, little_byte& reg, little_byte amount) {
         processor.flags.AC = (((reg & 0x0F) + amount) > 0x0F);
 
         reg += amount;
         processor.flags.S = (reg >> 7) & 1;
         processor.flags.Z = (reg == 0) ? 1 : 0;
 
-        byte v = reg;
+        little_byte v = reg;
         bool parity = true;
         while (v) {
             parity = !parity;
@@ -81,22 +105,22 @@ namespace instructions {
         processor.flags.P = parity;
     }
 
-    void inc_dec_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
-        byte reg_code = ((opcode & 0b00111000) >> 3);
-        byte& reg = processor.get_register_by_code(memory, reg_code);
+    void inc_dec_instruction(little_byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
+        little_byte reg_code = ((opcode & 0b00111000) >> 3);
+        little_byte& reg = processor.get_register_by_code(memory, reg_code);
 
         adjust_value(processor, memory, reg, amount);
 
         std::clog << instruction_name << " " << processor.get_register_name_by_code(reg_code) << "\n";
     }
 
-    void add_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
+    void add_instruction(little_byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name) {
         adjust_value(processor, memory, processor.registers.A, amount);
         
         std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
-    void sub_instruction(byte opcode, Processor& processor, MEMORY& memory, byte amount, std::string instruction_name) {
+    void sub_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte amount, std::string instruction_name) {
         amount = ~amount + 1;
         adjust_value(processor, memory, processor.registers.A, amount);
 
@@ -105,11 +129,11 @@ namespace instructions {
         std::clog << instruction_name << " " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
-    void move_instruction(byte opcode, Processor& processor, MEMORY& memory) {
-        byte src_code = opcode & 0x07;
-        byte dst_code = (opcode & 0x38) >> 3;
-        byte& src = processor.get_register_by_code(memory, src_code);
-        byte& dst = processor.get_register_by_code(memory, dst_code);
+    void move_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
+        little_byte src_code = opcode & 0x07;
+        little_byte dst_code = (opcode & 0x38) >> 3;
+        little_byte& src = processor.get_register_by_code(memory, src_code);
+        little_byte& dst = processor.get_register_by_code(memory, dst_code);
 
         if (!((src_code == dst_code) && (src_code == 0b110))) {
             dst = src;
@@ -120,30 +144,30 @@ namespace instructions {
         std::clog << "MOV " << processor.get_register_name_by_code(dst_code) << "," << processor.get_register_name_by_code(src_code) << "\n";
     }
 
-    void logical_and_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+    void logical_and_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value) {
         processor.registers.A = processor.registers.A & value;
         processor.flags.CF = 0;
 
         std::clog << "ANA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
-    void logical_xor_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+    void logical_xor_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value) {
         processor.registers.A = processor.registers.A ^ value;
 
         std::clog << "XRA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
-    void logical_or_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+    void logical_or_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value) {
         processor.registers.A = processor.registers.A || value;
 
         std::clog << "ORA " << processor.get_register_name_by_code((opcode & 0b00000111)) << "\n";
     }
 
-    void compare_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value) {
+    void compare_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value) {
         sub_instruction(opcode, processor, memory, value, "CMP");
     }
 
-    void load_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+    void load_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
         char loc = 'D';
         word adr = (word)(((processor.registers.D & 0xF) << 8) | processor.registers.E);
 
@@ -155,7 +179,7 @@ namespace instructions {
         std::clog << "LDAX " << loc << "\n";
     }
 
-    void store_instruction(byte opcode, Processor& processor, MEMORY& memory) {
+    void store_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
         char loc = 'D';
         word adr = (word)(((processor.registers.D & 0xF) << 8) | processor.registers.E);
         
@@ -180,5 +204,40 @@ namespace instructions {
     void set_carry(Processor& processor) {
         processor.flags.CF = 1;
         std::clog << "CMA\n";
+    }
+
+    void rotate_accumulator_left(Processor& processor) {
+        processor.flags.CF = processor.registers.A >> 7;
+        processor.registers.A = std::rotl(processor.registers.A, 1);
+
+        std::clog << "RLC\n";
+    }
+
+    void rotate_accumulator_right(Processor& processor) {
+        processor.flags.CF = processor.registers.A & 1;
+        processor.registers.A = std::rotr(processor.registers.A, 1);
+
+        std::clog << "RRC\n";
+    }
+
+    void rotate_accumulator_left_carry(Processor& processor) {
+        processor.registers.A = std::rotl(processor.registers.A, 1);
+
+        bool temp = processor.flags.CF;
+        processor.flags.CF = processor.registers.A & 1;
+        processor.registers.A = (processor.registers.A & ~1) | (temp ? 1 : 0);
+
+        std::clog << "RAL\n";
+    }
+
+    void rotate_accumulator_right_carry(Processor& processor) {
+        processor.registers.A = std::rotr(processor.registers.A, 1);
+
+        bool temp = processor.flags.CF;
+
+        processor.flags.CF = (processor.registers.A >> 7) & 1;
+        processor.registers.A = (processor.registers.A & 0b01111111) | (temp ? 0b10000000 : 0);
+
+        std::clog << "RAR\n";
     }
 }

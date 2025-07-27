@@ -6,6 +6,7 @@
 #include "definitions/opcodes.h"
 #include "argument_parsing/argument_parser.h"
 #include "processor.h"
+#include "instructions.h"
 
 
 
@@ -44,7 +45,7 @@ int main (int argc, char *argv[]) {
         std::cout << "Useage: main.out <file> | main.out [flags][files...]\n\n";
         std::cout << "Arguments:\n";
         std::cout << "  -h --help           Shows this screen.\n";
-        std::cout << "  -f --file <file>    Required! Specify binary file for the program to read.\n";
+        std::cout << "  -f --file <file>    Required! Specify binary file for the program to read. If no other flags are set, this flag can be omitted, and only the file specified.\n";
         std::cout << "  -d --debug          Enables debug mode. Shows detailed information on what instructions were run and what the state of the emulator was.\n";
         return 0;
     }
@@ -59,6 +60,8 @@ int main (int argc, char *argv[]) {
     }
     
     memory.load_file(filename);
+
+    instructions::init_instruction_table();
 
     cpu.reset();
     cpu.execute(memory, in_data, out_data);

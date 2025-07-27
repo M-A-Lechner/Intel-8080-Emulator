@@ -52,10 +52,10 @@ In the future, I plan to implement a simple assembly interpreter, to more easily
 
 ## Implemented instructions
 
-**~ 61%** of all 256 instructions have been implemented.
+**~ 63%** (161) of all 256 instructions have been implemented.
 
-Please check this chapter to see which instructions are functional, even though an instruction might be listed in "opcodes.h", it may not be implemented yet.\
-Instructions that have a "not tested" marker, may seem work as expected, however their behaviour regarding reading memory and updating flags have not been thoroughly tested.
+Please check the following list to see which instructions are functional, even though all instructions are listed in "definitions/opcodes.h", specific instructions may not be implemented yet.\
+Instructions that have a "not tested" marker, may seem to work as expected, however their behaviour regarding reading memory and updating flags have not been thoroughly tested.
 
 - [x] MOV (not tested)
 - [x] INR (not tested)
@@ -72,3 +72,7 @@ Instructions that have a "not tested" marker, may seem work as expected, however
 - [x] ORA (not tested)
 - [x] CMP (not tested)
 - [x] CMA (not tested)
+- [x] RLC
+- [x] RRC
+- [x] RAL
+- [x] RAR

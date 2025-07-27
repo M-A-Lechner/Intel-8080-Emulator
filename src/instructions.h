@@ -1,5 +1,7 @@
 #pragma once
 
+#define INSTRUCTION_PARAMS [get_reg](little_byte opcode, Processor& processor, MEMORY& memory)
+
 #include <iostream>
 #include <stdexcept>
 #include <sstream>
@@ -8,6 +10,8 @@
 #include <array>
 #include <algorithm>
 #include <ranges>
+#include <bit>
+#include <functional>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
@@ -31,30 +35,38 @@ constexpr auto cmp_opcodes = std::to_array({CMP_B, CMP_C, CMP_D, CMP_E, CMP_H, C
 constexpr auto inr_opcodes = std::to_array({INR_B, INR_C, INR_D, INR_E, INR_H, INR_L, INR_M, INR_A});
 constexpr auto dcr_opcodes = std::to_array({DCR_B, DCR_C, DCR_D, DCR_E, DCR_H, DCR_L, DCR_M, DCR_A});
 
-
-
 constexpr auto ldax_opcodes = std::to_array({LDAX_B, LDAX_D});
 constexpr auto stax_opcodes = std::to_array({STAX_B, STAX_D});
 
+
 namespace instructions {
-    extern void execute_instruction(byte opcode, Processor& processor, MEMORY& memory);
+    extern std::function<void(little_byte, Processor&, MEMORY&)> instruction_table[256];
+    extern void execute_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
 
-    void adjust_value(Processor& processor, MEMORY& memory, byte& reg, byte amount);
+    extern void init_instruction_table();
 
-    void inc_dec_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
-    void add_instruction(byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
-    void sub_instruction(byte opcode, Processor& processor, MEMORY& memory, byte amount, std::string instruction_name);
-    void move_instruction(byte opcode, Processor& processor, MEMORY& memory);
+    void adjust_value(Processor& processor, MEMORY& memory, little_byte& reg, little_byte amount);
 
-    void logical_and_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
-    void logical_xor_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
-    void logical_or_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
-    void compare_instruction(byte opcode, Processor& processor, MEMORY& memory, byte value);
+    void inc_dec_instruction(little_byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
+    void add_instruction(little_byte opcode, Processor& processor, MEMORY& memory, signed char amount, std::string instruction_name);
+    void sub_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte amount, std::string instruction_name);
+    void move_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
 
-    void load_instruction(byte opcode, Processor& processor, MEMORY& memory);
-    void store_instruction(byte opcode, Processor& processor, MEMORY& memory);
+    void logical_and_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value);
+    void logical_xor_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value);
+    void logical_or_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value);
+    void compare_instruction(little_byte opcode, Processor& processor, MEMORY& memory, little_byte value);
+
+    void load_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
+    void store_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
 
     void complement_accumulator(Processor& processor);
     void complement_carry(Processor& processor);
     void set_carry(Processor& processor);
+
+    // Rotate Accumulator Instructions
+    void rotate_accumulator_left(Processor& processor);
+    void rotate_accumulator_right(Processor& processor);
+    void rotate_accumulator_left_carry(Processor& processor);
+    void rotate_accumulator_right_carry(Processor& processor);
 }

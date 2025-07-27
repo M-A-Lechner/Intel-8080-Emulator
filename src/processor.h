@@ -13,13 +13,13 @@
 #include "memory.h"
 
 struct OUT_DATA {
-    std::array<byte, 256> data;
+    std::array<little_byte, 256> data;
 
     void reset();
 };
 
 struct IN_DATA {
-    std::array<byte, 256> data;
+    std::array<little_byte, 256> data;
 
     void reset();
 };
@@ -37,14 +37,14 @@ struct Processor {
     };
 
     struct Registers {
-        byte A;
-        byte B;
-        byte C;
-        byte D;
-        byte E;
+        little_byte A;
+        little_byte B;
+        little_byte C;
+        little_byte D;
+        little_byte E;
         
-        byte H;
-        byte L;
+        little_byte H;
+        little_byte L;
 
         void reset();
     };
@@ -66,23 +66,23 @@ struct Processor {
      * Increases given register value by one.
      * Flags affected are: S, Z, AC, P
      */
-    void increase_by_one(byte& reg);
+    void increase_by_one(little_byte& reg);
 
-    byte get_next_byte(MEMORY& memory);
+    little_byte get_next_byte(MEMORY& memory);
 
     word get_next_word(MEMORY& memory);
 
-    char get_register_name_by_code(byte code);
+    char get_register_name_by_code(little_byte code);
 
-    byte& get_register_by_code(MEMORY& memory, byte code);
+    little_byte& get_register_by_code(MEMORY& memory, little_byte code);
 
-    byte& get_byte_at_ref(MEMORY& memory, byte adr);
+    little_byte& get_byte_at_ref(MEMORY& memory, little_byte adr);
 
     void log_registers(MEMORY& memory);
 
     void log_flags();
 
-    void increase_counter(byte amount = 1);
+    void increase_counter(little_byte amount = 1);
 
     void halt();
 };

@@ -10,7 +10,7 @@ void MEMORY::load_file(std::string filename) {
     if (!in_file)
         throw std::runtime_error("No file with the given filename \"" + filename + "\" was found.");
 
-    byte next_byte = 0;
+    little_byte next_byte = 0;
 
     while (in_file >> std::hex >> next_byte) {
         

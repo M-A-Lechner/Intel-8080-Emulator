@@ -43,27 +43,27 @@ void Processor::execute(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
     }
 }
 
-byte Processor::get_next_byte(MEMORY& memory) {
+little_byte Processor::get_next_byte(MEMORY& memory) {
     PC += 1;
-    byte adr = memory.data[PC];
+    little_byte adr = memory.data[PC];
     std::cout << "\tByte retrieved: " << std::hex << (int)adr << "\n";
     return adr;
 }
 
-byte& Processor::get_byte_at_ref(MEMORY& memory, byte adr) {
+little_byte& Processor::get_byte_at_ref(MEMORY& memory, little_byte adr) {
     return memory.data[adr];
 }
 
 word Processor::get_next_word(MEMORY& memory) {
-    byte lb = memory.data[PC+1];
-    byte hb = memory.data[PC+2];
+    little_byte lb = memory.data[PC+1];
+    little_byte hb = memory.data[PC+2];
     word adr = (lb << 8) | hb;
     std::cout << "\tWord retrieved: " << std::hex << (int)adr << "\n";
     PC += 2;
     return adr;
 }
 
-char Processor::get_register_name_by_code(byte code) {
+char Processor::get_register_name_by_code(little_byte code) {
     switch (code) {
         case 0b0000: {
             return 'B';
@@ -97,7 +97,7 @@ char Processor::get_register_name_by_code(byte code) {
     }
 }
 
-byte& Processor::get_register_by_code(MEMORY& memory, byte code) {
+little_byte& Processor::get_register_by_code(MEMORY& memory, little_byte code) {
     switch (code) {
         case 0b0000: {
             return registers.B;
@@ -152,7 +152,7 @@ void Processor::log_flags() {
     std::clog << "P: " << (int)flags.P << "\n\n";
 }
 
-void Processor::increase_counter(byte amount) {
+void Processor::increase_counter(little_byte amount) {
     PC += amount;
 }
 
