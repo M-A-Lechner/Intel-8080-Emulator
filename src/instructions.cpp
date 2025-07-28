@@ -83,6 +83,15 @@ namespace instructions {
         for (little_byte opcode: pop_opcodes)
             instruction_table[opcode] = INSTRUCTION_PARAMS { pop_instruction(opcode, processor, memory); };
 
+        for (little_byte opcode: dad_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { double_add_instruction(opcode, processor); };
+
+        for (little_byte opcode: inx_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { increment_register_pair_instruction(opcode, processor); };
+
+        for (little_byte opcode: dcx_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { decrement_register_pair_instruction(opcode, processor); };
+
         // Carry Instructions
         instruction_table[CMC] = INSTRUCTION_PARAMS { complement_carry(processor); };
         instruction_table[STC] = INSTRUCTION_PARAMS { set_carry(processor); };
@@ -93,6 +102,29 @@ namespace instructions {
         instruction_table[RRC] = INSTRUCTION_PARAMS { rotate_accumulator_right(processor); };
         instruction_table[RAL] = INSTRUCTION_PARAMS { rotate_accumulator_left_carry(processor); };
         instruction_table[RAR] = INSTRUCTION_PARAMS { rotate_accumulator_right_carry(processor); };
+
+        instruction_table[XCHG] = INSTRUCTION_PARAMS { exchange_registers_instruction(processor); };
+        instruction_table[XTHL] = INSTRUCTION_PARAMS { exchange_stack_instruction(processor, memory); };
+        instruction_table[SPHL] = INSTRUCTION_PARAMS { load_sp_from_h_l_instruction(processor); };
+    }
+
+    little_byte get_two_bit_code(little_byte opcode) {
+        return (opcode & 0b00110000) >> 4;
+    }
+
+    std::string get_reg_name_from_code(little_byte code) {
+        switch (code) {
+            case (0b00):
+                return "B";
+            case (0b01):
+                return "D";
+            case (0b10):
+                return "H";
+            case (0b11):
+                return "PSW";
+            default:
+                return "THIS VALUE SHOULD NOT BE SHOWN";
+        }
     }
 
     void adjust_value(Processor& processor, MEMORY& memory, little_byte& reg, little_byte amount) {
@@ -247,7 +279,7 @@ namespace instructions {
     }
 
     void push_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
-        little_byte code = (opcode & 0b00110000) >> 4;
+        little_byte code = get_two_bit_code(opcode);
         std::pair<little_byte&, little_byte&> values = processor.get_register_pair(code);
 
         processor.SP -= 1;
@@ -255,27 +287,11 @@ namespace instructions {
         processor.SP -= 1;
         memory.data[processor.SP] = values.second;
 
-        std::string reg_name = "THIS VALUE SHOULD NOT BE SHOWN";
-        switch (code) {
-            case (0b00):
-                reg_name = "B";
-                break;
-            case (0b01):
-                reg_name = "D";
-                break;
-            case (0b10):
-                reg_name = "H";
-                break;
-            case (0b11):
-                reg_name = "PSW";
-                break;
-        }
-
-        std::clog << "PUSH " << reg_name << "\n";
+        std::clog << "PUSH " << get_reg_name_from_code(code) << "\n";
     }
 
     void pop_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
-        little_byte code = (opcode & 0b00110000) >> 4;
+        little_byte code = get_two_bit_code(opcode);
         std::pair<little_byte&, little_byte&> regs = processor.get_register_pair(code);
 
         regs.second = memory.data[processor.SP];
@@ -291,22 +307,88 @@ namespace instructions {
 
         processor.SP += 1;
 
-        std::string reg_name = "THIS VALUE SHOULD NOT BE SHOWN";
-        switch (code) {
-            case (0b00):
-                reg_name = "B";
-                break;
-            case (0b01):
-                reg_name = "D";
-                break;
-            case (0b10):
-                reg_name = "H";
-                break;
-            case (0b11):
-                reg_name = "PSW";
-                break;
+        std::clog << "POP " << get_reg_name_from_code(code) << "\n";
+    }
+
+    void double_add_instruction(little_byte opcode, Processor& processor) {
+        little_byte code = get_two_bit_code(opcode);
+        uint32_t value_given_reg = (uint32_t)processor.get_register_value_pair(code);
+        uint32_t value_h_l = (uint32_t)processor.get_register_value_pair(0b10);
+
+        if (opcode == 0b11)
+            value_given_reg = (uint32_t)processor.SP;
+
+        uint32_t resulting_value = value_given_reg + value_h_l;
+        processor.flags.CF = resulting_value > 0xFFFF;
+        processor.registers.H = (word)resulting_value >> 8;
+        processor.registers.L = (word)resulting_value & 0xFF;
+
+        std::clog << "DAD\n";
+    }
+
+    void increment_register_pair_instruction(little_byte opcode, Processor& processor) {
+        little_byte code = get_two_bit_code(opcode);
+        std::pair<little_byte&, little_byte&> regs = processor.get_register_pair(code);
+
+        if (code == 0b11)
+            processor.SP += 1;
+        else {
+            regs.second += 1;
+            if (regs.second == 0x00)
+                regs.first += 1;
         }
 
-        std::clog << "POP " << reg_name << "\n";
+        std::string reg_name = get_reg_name_from_code(code);
+
+        std::clog << "INX " << (reg_name == "PSW" ? "SP" : reg_name) << "\n";
+    }
+
+    void decrement_register_pair_instruction(little_byte opcode, Processor& processor) {
+        little_byte code = get_two_bit_code(opcode);
+        std::pair<little_byte&, little_byte&> regs = processor.get_register_pair(code);
+
+        if (code == 0b11)
+            processor.SP -= 1;
+        else {
+            regs.second -= 1;
+            if (regs.second == 0xFF)
+                regs.first -= 1;
+        }
+
+        std::string reg_name = get_reg_name_from_code(code);
+
+        std::clog << "INX " << (reg_name == "PSW" ? "SP" : reg_name) << "\n";
+    }
+
+    void exchange_registers_instruction(Processor& processor) {
+        little_byte swap_high = processor.registers.H;
+        little_byte swap_low = processor.registers.L;
+
+        processor.registers.H = processor.registers.D;
+        processor.registers.L = processor.registers.E;
+        
+        processor.registers.D = swap_high;
+        processor.registers.E = swap_low;
+        
+        std::clog << "XCHG\n";
+    }
+
+    void exchange_stack_instruction(Processor& processor, MEMORY& memory) {
+        little_byte swap_high = processor.registers.H;
+        little_byte swap_low = processor.registers.L;
+
+        processor.registers.H = memory.data[processor.SP + 1];
+        processor.registers.L = memory.data[processor.SP];
+        
+        memory.data[processor.SP + 1] = swap_high;
+        memory.data[processor.SP] = swap_low;
+
+        std::clog << "XTHL\n";
+    }
+
+    void load_sp_from_h_l_instruction(Processor& processor) {
+        processor.SP = (processor.registers.H << 8) | processor.registers.L;
+
+        std::clog << "SPHL\n";
     }
 }

@@ -42,12 +42,19 @@ constexpr auto stax_opcodes = std::to_array({STAX_B, STAX_D});
 constexpr auto push_opcodes = std::to_array({PUSH_B, PUSH_D, PUSH_H, PUSH_PSW});
 constexpr auto pop_opcodes = std::to_array({POP_B, POP_D, POP_H, POP_PSW});
 
+constexpr auto dad_opcodes = std::to_array({DAD_B, DAD_D, DAD_H, DAD_SP});
+constexpr auto inx_opcodes = std::to_array({INX_B, INX_D, INX_H, INX_SP});
+constexpr auto dcx_opcodes = std::to_array({DCX_B, DCX_D, DCX_H, DCX_SP});
+
 
 namespace instructions {
     extern std::function<void(little_byte, Processor&, MEMORY&)> instruction_table[256];
     extern void execute_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
 
     extern void init_instruction_table();
+
+    little_byte get_two_bit_code(little_byte opcode);
+    std::string get_reg_name_from_code(little_byte code);
 
     void adjust_value(Processor& processor, MEMORY& memory, little_byte& reg, little_byte amount);
 
@@ -77,4 +84,12 @@ namespace instructions {
     // Register Pair Instructions
     void push_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
     void pop_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
+
+    void double_add_instruction(little_byte opcode, Processor& processor);
+    void increment_register_pair_instruction(little_byte opcode, Processor& processor);
+    void decrement_register_pair_instruction(little_byte opcode, Processor& processor);
+
+    void exchange_registers_instruction(Processor& processor);
+    void exchange_stack_instruction(Processor& processor, MEMORY& memory);
+    void load_sp_from_h_l_instruction(Processor& processor);
 }

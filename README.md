@@ -52,15 +52,16 @@ In the future, I plan to implement a simple assembly interpreter, to more easily
 
 ## Implemented instructions
 
-**~ 64%** (165) of all 256 instructions have been implemented.
+**~73%** (186) of all 256 instructions have been implemented.
 
 Please check the following list to see which instructions are functional, even though all instructions are listed in "definitions/opcodes.h", specific instructions may not be implemented yet.\
 Instructions that have a "not tested" marker, may seem to work as expected, however their behaviour regarding reading memory and updating flags have not been thoroughly tested.
 
+- [x] HLT
 - [x] MOV (not tested)
 - [x] INR (not tested)
 - [x] DCR (not tested)
-- [x] NOP (not tested)
+- [x] NOP
 - [x] LDAX (partially tested)
 - [x] STAX (not tested)
 - [x] ADD (not tested)
@@ -78,3 +79,9 @@ Instructions that have a "not tested" marker, may seem to work as expected, howe
 - [x] RAR
 - [x] PUSH
 - [x] POP
+- [x] DAD
+- [x] INX
+- [x] DCX
+- [x] XCHG
+- [x] XTHL
+- [x] SPHL
