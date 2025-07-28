@@ -1,3 +1,5 @@
+#define TEST_PARAMS Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data
+
 // compound assignment operators
 #include <iostream>
 #include <cassert>
@@ -22,21 +24,24 @@ struct OUT_DATA;
 
 void reset_all_memory(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
 
-void test_ana_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_add_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_sub_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_ldax_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
+void test_ana_instruction(TEST_PARAMS);
+void test_add_instruction(TEST_PARAMS);
+void test_sub_instruction(TEST_PARAMS);
+void test_ldax_instruction(TEST_PARAMS);
 
-void test_rlc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_rrc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_ral_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
-void test_rar_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data);
+void test_rlc_instruction(TEST_PARAMS);
+void test_rrc_instruction(TEST_PARAMS);
+void test_ral_instruction(TEST_PARAMS);
+void test_rar_instruction(TEST_PARAMS);
 
+void test_push_instruction(TEST_PARAMS);
+void test_pop_instruction(TEST_PARAMS);
 
 int main () {
     instructions::init_instruction_table();
     Processor cpu;
     cpu.reset();
+    cpu.DEBUG_MODE = true;
     IN_DATA in_data;
     OUT_DATA out_data;
     MEMORY memory;
@@ -50,6 +55,9 @@ int main () {
     test_rrc_instruction(cpu, memory, in_data, out_data);
     test_ral_instruction(cpu, memory, in_data, out_data);
     test_rar_instruction(cpu, memory, in_data, out_data);
+
+    test_push_instruction(cpu, memory, in_data, out_data);
+    test_pop_instruction(cpu, memory, in_data, out_data);
 }
 
 void reset_all_memory(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
@@ -58,7 +66,7 @@ void reset_all_memory(MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
     out_data.reset();
 }
 
-void test_ana_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_ana_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
 
     processor.reset();
@@ -74,7 +82,7 @@ void test_ana_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.registers.A == 0b00000011, "Test instruction ANA successful.");
 }
 
-void test_add_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_add_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
 
     processor.reset();
@@ -91,7 +99,7 @@ void test_add_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.registers.A == 0b00010000, "Test instruction ADD successful.");
 }
 
-void test_sub_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_sub_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
 
     processor.reset();
@@ -107,7 +115,7 @@ void test_sub_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.flags.CF == 0, "Test instruction SUB successful: Value of Carry flag.");
 }
 
-void test_ldax_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_ldax_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
     processor.reset();
 
@@ -127,7 +135,7 @@ void test_ldax_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data
 }
 
 // Accumulator Rotation Instructions
-void test_rlc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_rlc_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
     processor.reset();
 
@@ -142,7 +150,7 @@ void test_rlc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.flags.CF == true, "Test instruction RLC successful: Value of Carry flag.");
 }
 
-void test_rrc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_rrc_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
     processor.reset();
 
@@ -157,7 +165,7 @@ void test_rrc_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.flags.CF == false, "Test instruction RRC successful: Value of Carry flag.");
 }
 
-void test_ral_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_ral_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
     processor.reset();
 
@@ -172,7 +180,7 @@ void test_ral_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
     assertm(processor.flags.CF == true, "Test instruction RAL successful: Value of Carry flag.");
 }
 
-void test_rar_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data, OUT_DATA& out_data) {
+void test_rar_instruction(TEST_PARAMS) {
     reset_all_memory(memory, in_data, out_data);
     processor.reset();
 
@@ -185,4 +193,45 @@ void test_rar_instruction(Processor processor, MEMORY& memory, IN_DATA& in_data,
 
     assertm(processor.registers.A == 0b01111001, "Test instruction RAR successful: Value of A register.");
     assertm(processor.flags.CF == false, "Test instruction RAR successful: Value of Carry flag.");
+}
+
+void test_push_instruction(TEST_PARAMS) {
+    reset_all_memory(memory, in_data, out_data);
+    processor.reset();
+
+    processor.registers.B = 0x8F;
+    processor.registers.C = 0x9D;
+
+    processor.SP = 0x3A2C;
+
+    memory.data[0] = PUSH_B;
+    memory.data[1] = HLT;
+
+    processor.execute(memory, in_data, out_data);
+
+    assertm(memory.data[0x3A2B] == 0x8F, "Test instruction PUSH successful: Value of B register stored in correct stack location.");
+    assertm(memory.data[0x3A2A] == 0x9D, "Test instruction PUSH successful: Value of C register stored in correct stack location.");
+    assertm(processor.SP == 0x3A2A, "Test instruction PUSH successful: Value of Stack Pointer.");
+}
+
+void test_pop_instruction(TEST_PARAMS) {
+    reset_all_memory(memory, in_data, out_data);
+    processor.reset();
+
+    processor.registers.B = 0x8F;
+    processor.registers.C = 0x9D;
+
+    processor.SP = 0x3A2C;
+
+    memory.data[0] = POP_B;
+    memory.data[1] = HLT;
+
+    memory.data[0x3A2C] = 0x00;
+    memory.data[0x3A2D] = 0x10;
+
+    processor.execute(memory, in_data, out_data);
+
+    assertm(processor.registers.B == 0x10, "Test instruction POP successful: Value of B register.");
+    assertm(processor.registers.C == 0x00, "Test instruction POP successful: Value of C register.");
+    assertm(processor.SP == 0x3A2E, "Test instruction POP successful: Value of Stack Pointer.");
 }

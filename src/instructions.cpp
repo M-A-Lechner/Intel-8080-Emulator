@@ -77,6 +77,12 @@ namespace instructions {
         for (little_byte opcode: stax_opcodes)
             instruction_table[opcode] = INSTRUCTION_PARAMS { store_instruction(opcode, processor, memory); };
 
+        for (little_byte opcode: push_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { push_instruction(opcode, processor, memory); };
+
+        for (little_byte opcode: pop_opcodes)
+            instruction_table[opcode] = INSTRUCTION_PARAMS { pop_instruction(opcode, processor, memory); };
+
         // Carry Instructions
         instruction_table[CMC] = INSTRUCTION_PARAMS { complement_carry(processor); };
         instruction_table[STC] = INSTRUCTION_PARAMS { set_carry(processor); };
@@ -234,10 +240,73 @@ namespace instructions {
         processor.registers.A = std::rotr(processor.registers.A, 1);
 
         bool temp = processor.flags.CF;
-
         processor.flags.CF = (processor.registers.A >> 7) & 1;
         processor.registers.A = (processor.registers.A & 0b01111111) | (temp ? 0b10000000 : 0);
 
         std::clog << "RAR\n";
+    }
+
+    void push_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
+        little_byte code = (opcode & 0b00110000) >> 4;
+        std::pair<little_byte&, little_byte&> values = processor.get_register_pair(code);
+
+        processor.SP -= 1;
+        memory.data[processor.SP] = values.first;
+        processor.SP -= 1;
+        memory.data[processor.SP] = values.second;
+
+        std::string reg_name = "THIS VALUE SHOULD NOT BE SHOWN";
+        switch (code) {
+            case (0b00):
+                reg_name = "B";
+                break;
+            case (0b01):
+                reg_name = "D";
+                break;
+            case (0b10):
+                reg_name = "H";
+                break;
+            case (0b11):
+                reg_name = "PSW";
+                break;
+        }
+
+        std::clog << "PUSH " << reg_name << "\n";
+    }
+
+    void pop_instruction(little_byte opcode, Processor& processor, MEMORY& memory) {
+        little_byte code = (opcode & 0b00110000) >> 4;
+        std::pair<little_byte&, little_byte&> regs = processor.get_register_pair(code);
+
+        regs.second = memory.data[processor.SP];
+        processor.SP += 1;
+
+        if (code == 0b11) {
+            processor.flags.S = (memory.data[processor.SP] & 0b10000000) >> 7;
+            processor.flags.Z = (memory.data[processor.SP] & 0b01000000) >> 6;
+            processor.flags.AC = (memory.data[processor.SP] & 0b00010000) >> 4;
+            processor.flags.P = (memory.data[processor.SP] & 0b00000100) >> 2;
+            processor.flags.CF = (memory.data[processor.SP] & 0b00000001);
+        } else regs.first = memory.data[processor.SP];
+
+        processor.SP += 1;
+
+        std::string reg_name = "THIS VALUE SHOULD NOT BE SHOWN";
+        switch (code) {
+            case (0b00):
+                reg_name = "B";
+                break;
+            case (0b01):
+                reg_name = "D";
+                break;
+            case (0b10):
+                reg_name = "H";
+                break;
+            case (0b11):
+                reg_name = "PSW";
+                break;
+        }
+
+        std::clog << "POP " << reg_name << "\n";
     }
 }

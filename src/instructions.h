@@ -12,6 +12,7 @@
 #include <ranges>
 #include <bit>
 #include <functional>
+#include <utility>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
@@ -37,6 +38,9 @@ constexpr auto dcr_opcodes = std::to_array({DCR_B, DCR_C, DCR_D, DCR_E, DCR_H, D
 
 constexpr auto ldax_opcodes = std::to_array({LDAX_B, LDAX_D});
 constexpr auto stax_opcodes = std::to_array({STAX_B, STAX_D});
+
+constexpr auto push_opcodes = std::to_array({PUSH_B, PUSH_D, PUSH_H, PUSH_PSW});
+constexpr auto pop_opcodes = std::to_array({POP_B, POP_D, POP_H, POP_PSW});
 
 
 namespace instructions {
@@ -69,4 +73,8 @@ namespace instructions {
     void rotate_accumulator_right(Processor& processor);
     void rotate_accumulator_left_carry(Processor& processor);
     void rotate_accumulator_right_carry(Processor& processor);
+
+    // Register Pair Instructions
+    void push_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
+    void pop_instruction(little_byte opcode, Processor& processor, MEMORY& memory);
 }

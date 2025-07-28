@@ -6,6 +6,7 @@
 #include <limits.h>
 #include <memory>
 #include <array>
+#include <utility>
 
 #include "definitions/datatypes.h"
 #include "definitions/opcodes.h"
@@ -32,6 +33,7 @@ struct Processor {
         flag AC;
         flag CF;
         flag P;
+        little_byte flags;
 
         void reset();
     };
@@ -77,6 +79,10 @@ struct Processor {
     little_byte& get_register_by_code(MEMORY& memory, little_byte code);
 
     little_byte& get_byte_at_ref(MEMORY& memory, little_byte adr);
+
+    word get_register_value_pair(little_byte code);
+
+    std::pair<little_byte&, little_byte&> get_register_pair(little_byte code);
 
     void log_registers(MEMORY& memory);
 

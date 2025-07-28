@@ -52,7 +52,7 @@ In the future, I plan to implement a simple assembly interpreter, to more easily
 
 ## Implemented instructions
 
-**~ 63%** (161) of all 256 instructions have been implemented.
+**~ 64%** (165) of all 256 instructions have been implemented.
 
 Please check the following list to see which instructions are functional, even though all instructions are listed in "definitions/opcodes.h", specific instructions may not be implemented yet.\
 Instructions that have a "not tested" marker, may seem to work as expected, however their behaviour regarding reading memory and updating flags have not been thoroughly tested.
@@ -76,3 +76,5 @@ Instructions that have a "not tested" marker, may seem to work as expected, howe
 - [x] RRC
 - [x] RAL
 - [x] RAR
+- [x] PUSH
+- [x] POP

@@ -7,6 +7,7 @@ void Processor::Flags::reset() {
     AC = 0;
     CF = 0;
     P = 0;
+    flags = 0;
 }
 
 void Processor::Registers::reset() {
@@ -122,6 +123,51 @@ little_byte& Processor::get_register_by_code(MEMORY& memory, little_byte code) {
         } break;
         case 0b0111: {
             return registers.A;
+        } break;
+        default: {
+            std::stringstream err;
+            err << (int)code << " is an unkown register code.";
+            throw std::runtime_error(err.str());
+        }
+    }
+}
+
+word Processor::get_register_value_pair(little_byte code) {
+    switch (code) {
+        case (0b00): {
+            return (registers.B << 8) | registers.C;
+        } break;
+        case (0b01): {
+            return (registers.D << 8) | registers.E;
+        } break;
+        case (0b10): {
+            return (registers.H << 8) | registers.L;
+        } break;
+        case (0b11): {
+            return (registers.A << 8) | ((flags.S << 7) | (flags.Z << 6) | (0 << 5) | (flags.AC << 4) | (0 << 3) | (flags.P << 2) | (1 << 1) | (flags.CF << 0));
+        } break;
+        default: {
+            std::stringstream err;
+            err << (int)code << " is an unkown register code.";
+            throw std::runtime_error(err.str());
+        }
+    }
+}
+
+std::pair<little_byte&, little_byte&> Processor::get_register_pair(little_byte code) {
+    switch (code) {
+        case (0b00): {
+            return std::pair<little_byte&, little_byte&>{registers.B, registers.C};
+        } break;
+        case (0b01): {
+            return {registers.D, registers.E};
+        } break;
+        case (0b10): {
+            return {registers.H, registers.L};
+        } break;
+        case (0b11): {
+            flags.flags = ((flags.S << 7) | (flags.Z << 6) | (0 << 5) | (flags.AC << 4) | (0 << 3) | (flags.P << 2) | (1 << 1) | (flags.CF << 0));
+            return {registers.A, flags.flags};
         } break;
         default: {
             std::stringstream err;
